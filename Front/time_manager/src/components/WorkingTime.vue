@@ -67,19 +67,3 @@
         methods: {}
     }
 </script>
-
-<style scoped>
-
-    .text {
-
-        white-space: nowrap;
-        font-weight: bold;
-    }
-
-    .example {
-        background: #f2f2f2;
-        border: 1px solid #ddd;
-        /*padding: 0em 1em 1em;
-        margin-bottom: 2em;*/
-    }
-</style>

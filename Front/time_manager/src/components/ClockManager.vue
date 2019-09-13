@@ -1,7 +1,7 @@
 <template>
-    <div id="app-5" style="display: flex;" >
-        <button class="button text" v-on:click="ClockManager" v-bind:style="{ backgroundColor: colorClock, color: textColorClock }" v-bind:disabled="btnClock == true">Is working</button>
-        <button class="button text" v-on:click="ClockManager" v-bind:style="{ backgroundColor: colorUnclock, color: textColorUnclock }" v-bind:disabled="btnClock == false">Is not working</button>
+    <div>
+        <button class="button-work text" v-on:click="ClockManager" v-bind:style="{ backgroundColor: colorClock, color: textColorClock }" v-bind:disabled="btnClock == true">Is working</button>
+        <button class="button-work text" v-on:click="ClockManager" v-bind:style="{ backgroundColor: colorUnclock, color: textColorUnclock }" v-bind:disabled="btnClock == false">Is not working</button>
     </div>
 
 </template>
@@ -40,25 +40,3 @@
     }
 
 </script>
-
-<style scoped>
-
-    .text {
-        font-weight: bold;
-    }
-
-    .button {
-        border-radius: 10%;
-        height: 30%;
-        width: 90%;
-        margin: 3%;
-        border: none;
-        color: white;
-        padding: 15px 32px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        cursor: pointer;
-    }
-</style>
