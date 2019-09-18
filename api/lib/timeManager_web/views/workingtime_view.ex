@@ -3,11 +3,11 @@ defmodule AppWeb.WorkingtimeView do
   alias AppWeb.WorkingtimeView
 
   def render("index.json", %{workingtimes: workingtimes}) do
-    %{data: render_many(workingtimes, WorkingtimeView, "workingtime.json")}
+    render_many(workingtimes, WorkingtimeView, "workingtime.json")
   end
 
   def render("show.json", %{workingtime: workingtime}) do
-    %{data: render_one(workingtime, WorkingtimeView, "workingtime.json")}
+    render_one(workingtime, WorkingtimeView, "workingtime.json")
   end
 
   def render("workingtime.json", %{workingtime: workingtime}) do

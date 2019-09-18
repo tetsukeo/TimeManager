@@ -8,6 +8,7 @@ defmodule AppWeb.ClockController do
 
   def create(conn, %{"userID" => userID, "clock" => clock_params}) do
     with {:ok, %Clock{} = clock} <- Result.create_clock(clock_params, userID) do
+      IO.inspect(clock)
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.clock_path(conn, :show, clock))

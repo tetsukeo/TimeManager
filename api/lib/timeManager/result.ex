@@ -244,7 +244,7 @@ defmodule App.Result do
 
   def get_workingtime_by_user(userID, workingtimeID) do
     query = from c in Workingtime, where: c.user_id == ^userID and c.id == ^workingtimeID
-    Repo.all(query)
+    Repo.one(query)
     |> Repo.preload(:user)
   end
 
