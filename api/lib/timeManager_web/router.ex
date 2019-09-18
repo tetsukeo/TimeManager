@@ -8,9 +8,12 @@ defmodule AppWeb.Router do
   scope "/api", AppWeb do
     pipe_through :api
     resources "/users", UserController, except: [:new, :edit]
-    resources "/clocks", ClockController, except: [:new, :edit, :delete, :index, :update]
-    resources "/workingtimes", WorkingtimeController, except: [:new, :edit]
-    get "/", FallbackController, :index
+    get "/workingtimes/:userID", WorkingtimeController, :index
+    get "/workingtimes/:userID/:workingtimeID", WorkingtimeController, :show
+    post "/workingtimes/:userID", WorkingtimeController, :create
+    resources "/workingtimes", WorkingtimeController, except: [:new, :edit, :index, :show, :create]
+    get "/clocks/:userID", ClockController, :show
+    post "/clocks/:userID", ClockController, :create
   end
 end
 

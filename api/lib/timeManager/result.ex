@@ -134,8 +134,9 @@ defmodule App.Result do
   def get_clock!(id), do: Repo.get!(Clock, id)
 
   def get_clock_by_userID!(userID) do
-    query = from c in Clock, where: c.user == ^userID
+    query = from c in Clock, where: c.user_id == ^userID
     Repo.all(query)
+    |> Repo.preload(:user)
   end
 
   @doc """
@@ -150,8 +151,9 @@ defmodule App.Result do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_clock(attrs \\ %{}) do
+  def create_clock(attrs \\ %{}, userID) do
     %Clock{}
+    |> Map.put(:user_id, String.to_integer(userID))
     |> Clock.changeset(attrs)
     |> Repo.insert()
   end
@@ -219,8 +221,9 @@ defmodule App.Result do
   end
 
   def list_user_workingtimes!(userID) do
-    query = from c in Workingtime, where: c.user == ^userID
+    query = from c in Workingtime, where: c.user_id == ^userID
     Repo.all(query)
+    |> Repo.preload(:user)
   end
 
   @doc """
@@ -239,6 +242,12 @@ defmodule App.Result do
   """
   def get_workingtime!(id), do: Repo.get!(Workingtime, id)
 
+  def get_workingtime_by_user(userID, workingtimeID) do
+    query = from c in Workingtime, where: c.user_id == ^userID and c.id == ^workingtimeID
+    Repo.all(query)
+    |> Repo.preload(:user)
+  end
+
   @doc """
   Creates a workingtime.
 
@@ -251,8 +260,9 @@ defmodule App.Result do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_workingtime(attrs \\ %{}) do
+  def create_workingtime(attrs \\ %{}, userID) do
     %Workingtime{}
+    |> Map.put(:user_id, String.to_integer(userID))
     |> Workingtime.changeset(attrs)
     |> Repo.insert()
   end

@@ -6,8 +6,8 @@ defmodule AppWeb.ClockController do
 
   action_fallback AppWeb.FallbackController
 
-  def create(conn, %{"clock" => clock_params}) do
-    with {:ok, %Clock{} = clock} <- Result.create_clock(clock_params) do
+  def create(conn, %{"userID" => userID, "clock" => clock_params}) do
+    with {:ok, %Clock{} = clock} <- Result.create_clock(clock_params, userID) do
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.clock_path(conn, :show, clock))
@@ -17,7 +17,7 @@ defmodule AppWeb.ClockController do
 
   def show(conn, %{"userID" => userID}) do
     clock = Result.get_clock_by_userID!(userID)
-    render(conn, "show.json", clock: clock)
+    render(conn, "index.json", clocks: clock)
   end
 
 end

@@ -7,12 +7,12 @@ defmodule AppWeb.WorkingtimeController do
   action_fallback AppWeb.FallbackController
 
   def index(conn, %{"userID" => userID}) do
-    workingtimes = Result.list_user_workingtimes(userID)
+    workingtimes = Result.list_user_workingtimes!(userID)
     render(conn, "index.json", workingtimes: workingtimes)
   end
 
-  def create(conn, %{"workingtime" => workingtime_params}) do
-    with {:ok, %Workingtime{} = workingtime} <- Result.create_workingtime(workingtime_params) do
+  def create(conn, %{"userID" => userID ,"workingtime" => workingtime_params}) do
+    with {:ok, %Workingtime{} = workingtime} <- Result.create_workingtime(workingtime_params, userID) do
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.workingtime_path(conn, :show, workingtime))
@@ -20,9 +20,16 @@ defmodule AppWeb.WorkingtimeController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    workingtime = Result.get_workingtime!(id)
-    render(conn, "show.json", workingtime: workingtime)
+  def show(conn, %{"userID" => userID, "workingtimeID" => workingtimeID}) do
+    workingtime = Result.get_workingtime_by_user(userID, workingtimeID)
+    if (workingtime == []) do
+      conn
+      |> put_status(:not_found)
+      |> put_view(AppWeb.ErrorView)
+      |> render(:"404")
+    else
+      render(conn, "show.json", workingtime: workingtime)
+    end
   end
 
   def update(conn, %{"id" => id, "workingtime" => workingtime_params}) do

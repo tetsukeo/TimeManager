@@ -6,6 +6,8 @@ defmodule App.Result.User do
 
     field :email, :string, null: false
     field :username, :string, null: false
+    has_many :clocks, App.Result.Clock
+    has_many :workingtimes, App.Result.Workingtime
 
     timestamps()
   end
