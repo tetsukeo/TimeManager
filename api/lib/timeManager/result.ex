@@ -154,6 +154,7 @@ defmodule App.Result do
   def create_clock(attrs \\ %{}, userID) do
     %Clock{}
     |> Map.put(:user_id, String.to_integer(userID))
+    |> Map.put(:status, true)
     |> Clock.changeset(attrs)
     |> Repo.insert()
   end
@@ -264,6 +265,13 @@ defmodule App.Result do
     %Workingtime{}
     |> Map.put(:user_id, String.to_integer(userID))
     |> Workingtime.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def create_auto_workingtime(userID, clockStart, clockEnd) do
+    obj = %{start: clockStart, end: clockEnd, user_id: userID}
+    %Workingtime{}
+    |> Workingtime.changeset(obj)
     |> Repo.insert()
   end
 
