@@ -8,8 +8,14 @@ defmodule AppWeb.UserController do
   action_fallback AppWeb.FallbackController
 
   def index(conn, _params) do
-    users = Result.list_users()
-    render(conn, "index.json", users: users)
+    email = Map.get(_params, "email", "")
+    username = Map.get(_params, "username", "")
+    cond do
+      email != "" && username != "" -> render(conn, "index.json", users: Result.user_by_email_and_username(email, username))
+      email != "" -> render(conn, "index.json", users: Result.user_by_email(email))
+      username != "" -> render(conn, "index.json", users: Result.user_by_username(username))
+      true -> render(conn, "index.json", users: Result.list_users())
+    end  
   end
 
   def create(conn, %{"user" => user_params}) do

@@ -6,9 +6,15 @@ defmodule AppWeb.WorkingtimeController do
 
   action_fallback AppWeb.FallbackController
 
-  def index(conn, %{"userID" => userID}) do
-    workingtimes = Result.list_user_workingtimes!(userID)
-    render(conn, "index.json", workingtimes: workingtimes)
+  def index(conn, %{"userID" => userID} = params) do
+    clockStart = Map.get(params, "start", "")
+    clockEnd = Map.get(params, "end", "")
+    cond do
+      clockStart != "" && clockEnd != "" -> render(conn, "index.json", workingtimes: Result.list_user_workingtimes_start_end!(userID, clockStart, clockEnd))
+      clockStart != "" -> render(conn, "index.json", workingtimes: Result.list_user_workingtimes_start!(userID, clockStart))
+      clockEnd != "" -> render(conn, "index.json", workingtimes: Result.list_user_workingtimes_end!(userID, clockEnd))
+      true -> render(conn, "index.json", workingtimes: Result.list_user_workingtimes!(userID))
+    end
   end
 
   def create(conn, %{"userID" => userID ,"workingtime" => workingtime_params}) do

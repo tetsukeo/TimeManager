@@ -13,20 +13,21 @@ defmodule AppWeb.Router do
   scope "/api", AppWeb do
     pipe_through :api
     resources "/users", UserController, only: [:create, :show] # maybe replace by resources “/users", UserController, only: [:create, :show]
+    
+    post "/sign_up", UserController, :create
+    post "/sign_in", UserController, :sign_in
+  end
+
+  scope "/api", AppWeb do
+    pipe_through [:api, :jwt_authenticated]
+    get "/users", UserController, :index
+    delete "/users", UserController, :delete
     get "/workingtimes/:userID", WorkingtimeController, :index
     get "/workingtimes/:userID/:workingtimeID", WorkingtimeController, :show
     post "/workingtimes/:userID", WorkingtimeController, :create
     resources "/workingtimes", WorkingtimeController, except: [:new, :edit, :index, :show, :create]
     get "/clocks/:userID", ClockController, :show
     post "/clocks/:userID", ClockController, :create
-    post "/sign_up", UserController, :create
-    post "/sign_in", UserController, :sign_in
-  end
-
-  scope "/api/v1", AppWeb do
-    pipe_through [:api, :jwt_authenticated]
-
-    get "/users", UserController, :show
   end
 end
 

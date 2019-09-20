@@ -58,6 +58,21 @@ defmodule App.Result do
     Repo.all(User)
   end
 
+  def user_by_email(email) do
+    query = from c in User, where: c.email == ^email
+    Repo.all(query)
+  end
+
+  def user_by_username(username) do
+    query = from c in User, where: c.username == ^username
+    Repo.all(query)
+  end
+
+  def user_by_email_and_username(email, username) do
+    query = from c in User, where: c.email == ^email and c.username == ^username
+    Repo.all(query)
+  end
+
   @doc """
   Gets a single user.
 
@@ -260,6 +275,24 @@ defmodule App.Result do
 
   def list_user_workingtimes!(userID) do
     query = from c in Workingtime, where: c.user_id == ^userID
+    Repo.all(query)
+    |> Repo.preload(:user)
+  end
+
+  def list_user_workingtimes_start!(userID, start) do
+    query = from c in Workingtime, where: c.user_id == ^userID and c.start == ^start
+    Repo.all(query)
+    |> Repo.preload(:user)
+  end
+
+  def list_user_workingtimes_end!(userID, clockEnd) do
+    query = from c in Workingtime, where: c.user_id == ^userID and c.end == ^clockEnd
+    Repo.all(query)
+    |> Repo.preload(:user)
+  end
+
+  def list_user_workingtimes_start_end!(userID, start, clockEnd) do
+    query = from c in Workingtime, where: c.user_id == ^userID and c.start == ^start and c.end == ^clockEnd
     Repo.all(query)
     |> Repo.preload(:user)
   end
