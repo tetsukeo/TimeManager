@@ -280,19 +280,19 @@ defmodule App.Result do
   end
 
   def list_user_workingtimes_start!(userID, start) do
-    query = from c in Workingtime, where: c.user_id == ^userID and c.start == ^start
+    query = from c in Workingtime, where: c.user_id == ^userID and c.start >= ^start
     Repo.all(query)
     |> Repo.preload(:user)
   end
 
   def list_user_workingtimes_end!(userID, clockEnd) do
-    query = from c in Workingtime, where: c.user_id == ^userID and c.end == ^clockEnd
+    query = from c in Workingtime, where: c.user_id == ^userID and c.end <= ^clockEnd
     Repo.all(query)
     |> Repo.preload(:user)
   end
 
   def list_user_workingtimes_start_end!(userID, start, clockEnd) do
-    query = from c in Workingtime, where: c.user_id == ^userID and c.start == ^start and c.end == ^clockEnd
+    query = from c in Workingtime, where: c.user_id == ^userID and c.start >= ^start and c.end <= ^clockEnd
     Repo.all(query)
     |> Repo.preload(:user)
   end

@@ -18,11 +18,18 @@ defmodule AppWeb.WorkingtimeController do
   end
 
   def create(conn, %{"userID" => userID ,"workingtime" => workingtime_params}) do
-    with {:ok, %Workingtime{} = workingtime} <- Result.create_workingtime(workingtime_params, userID) do
-      conn
-      |> put_status(:created)
-      |> put_resp_header("location", Routes.workingtime_path(conn, :show, workingtime.user_id, workingtime.id))
-      |> render("show.json", workingtime: workingtime)
+    startClock = Map.get(workingtime_params, "start")
+    endClock = Map.get(workingtime_params, "end")
+    if (endClock < startClock) do
+      put_status(conn, 406)
+      |> render(AppWeb.ErrorView, "406.json", %{message: "End clock has to be greater than start clock"})
+    else
+      with {:ok, %Workingtime{} = workingtime} <- Result.create_workingtime(workingtime_params, userID) do
+        conn
+        |> put_status(:created)
+        |> put_resp_header("location", Routes.workingtime_path(conn, :show, workingtime.user_id, workingtime.id))
+        |> render("show.json", workingtime: workingtime)
+      end
     end
   end
 
