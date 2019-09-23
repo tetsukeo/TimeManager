@@ -6,23 +6,43 @@ defmodule AppWeb.WorkingtimeController do
 
   action_fallback AppWeb.FallbackController
 
-  def index(conn, %{"userID" => userID}) do
-    workingtimes = Result.list_user_workingtimes(userID)
-    render(conn, "index.json", workingtimes: workingtimes)
-  end
-
-  def create(conn, %{"workingtime" => workingtime_params}) do
-    with {:ok, %Workingtime{} = workingtime} <- Result.create_workingtime(workingtime_params) do
-      conn
-      |> put_status(:created)
-      |> put_resp_header("location", Routes.workingtime_path(conn, :show, workingtime))
-      |> render("show.json", workingtime: workingtime)
+  def index(conn, %{"userID" => userID} = params) do
+    clockStart = Map.get(params, "start", "")
+    clockEnd = Map.get(params, "end", "")
+    cond do
+      clockStart != "" && clockEnd != "" -> render(conn, "index.json", workingtimes: Result.list_user_workingtimes_start_end!(userID, clockStart, clockEnd))
+      clockStart != "" -> render(conn, "index.json", workingtimes: Result.list_user_workingtimes_start!(userID, clockStart))
+      clockEnd != "" -> render(conn, "index.json", workingtimes: Result.list_user_workingtimes_end!(userID, clockEnd))
+      true -> render(conn, "index.json", workingtimes: Result.list_user_workingtimes!(userID))
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    workingtime = Result.get_workingtime!(id)
-    render(conn, "show.json", workingtime: workingtime)
+  def create(conn, %{"userID" => userID ,"workingtime" => workingtime_params}) do
+    startClock = Map.get(workingtime_params, "start")
+    endClock = Map.get(workingtime_params, "end")
+    if (endClock < startClock) do
+      put_status(conn, 406)
+      |> render(AppWeb.ErrorView, "406.json", %{message: "End clock has to be greater than start clock"})
+    else
+      with {:ok, %Workingtime{} = workingtime} <- Result.create_workingtime(workingtime_params, userID) do
+        conn
+        |> put_status(:created)
+        |> put_resp_header("location", Routes.workingtime_path(conn, :show, workingtime.user_id, workingtime.id))
+        |> render("show.json", workingtime: workingtime)
+      end
+    end
+  end
+
+  def show(conn, %{"userID" => userID, "workingtimeID" => workingtimeID}) do
+    workingtime = Result.get_workingtime_by_user(userID, workingtimeID)
+    if (workingtime == nil) do
+      conn
+      |> put_status(:not_found)
+      |> put_view(AppWeb.ErrorView)
+      |> render(:"404")
+    else
+      render(conn, "show.json", workingtime: workingtime)
+    end
   end
 
   def update(conn, %{"id" => id, "workingtime" => workingtime_params}) do

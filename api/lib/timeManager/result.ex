@@ -4,9 +4,46 @@ defmodule App.Result do
   """
 
   import Ecto.Query, warn: false
+
+  import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
+
+  alias App.Guardian
+
   alias App.Repo
 
   alias App.Result.User
+
+  def token_sign_in(email, password) do
+    case email_password_auth(email, password) do
+      {:ok, user} ->
+        Guardian.encode_and_sign(user)
+      _ ->
+        {:error, :unauthorized}
+    end
+  end
+
+  defp email_password_auth(email, password) when is_binary(email) and is_binary(password) do
+    with {:ok, user} <- get_by_email(email),
+         do: verify_password(password, user)
+  end
+
+  defp get_by_email(email) when is_binary(email) do
+    case Repo.get_by(User, email: email) do
+      nil ->
+        dummy_checkpw()
+        {:error, "Login error."}
+      user ->
+        {:ok, user}
+    end
+  end
+
+    defp verify_password(password, %User{} = user) when is_binary(password) do
+      if checkpw(password, user.password_hash) do
+        {:ok, user}
+      else
+        {:error, :invalid_password}
+      end
+  end
 
   @doc """
   Returns the list of users.
@@ -19,6 +56,21 @@ defmodule App.Result do
   """
   def list_users do
     Repo.all(User)
+  end
+
+  def user_by_email(email) do
+    query = from c in User, where: c.email == ^email
+    Repo.all(query)
+  end
+
+  def user_by_username(username) do
+    query = from c in User, where: c.username == ^username
+    Repo.all(query)
+  end
+
+  def user_by_email_and_username(email, username) do
+    query = from c in User, where: c.email == ^email and c.username == ^username
+    Repo.all(query)
   end
 
   @doc """
@@ -134,8 +186,9 @@ defmodule App.Result do
   def get_clock!(id), do: Repo.get!(Clock, id)
 
   def get_clock_by_userID!(userID) do
-    query = from c in Clock, where: c.user == ^userID
+    query = from c in Clock, where: c.user_id == ^userID
     Repo.all(query)
+    |> Repo.preload(:user)
   end
 
   @doc """
@@ -150,8 +203,10 @@ defmodule App.Result do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_clock(attrs \\ %{}) do
+  def create_clock(attrs \\ %{}, userID) do
     %Clock{}
+    |> Map.put(:user_id, String.to_integer(userID))
+    |> Map.put(:status, true)
     |> Clock.changeset(attrs)
     |> Repo.insert()
   end
@@ -219,8 +274,27 @@ defmodule App.Result do
   end
 
   def list_user_workingtimes!(userID) do
-    query = from c in Workingtime, where: c.user == ^userID
+    query = from c in Workingtime, where: c.user_id == ^userID
     Repo.all(query)
+    |> Repo.preload(:user)
+  end
+
+  def list_user_workingtimes_start!(userID, start) do
+    query = from c in Workingtime, where: c.user_id == ^userID and c.start >= ^start
+    Repo.all(query)
+    |> Repo.preload(:user)
+  end
+
+  def list_user_workingtimes_end!(userID, clockEnd) do
+    query = from c in Workingtime, where: c.user_id == ^userID and c.end <= ^clockEnd
+    Repo.all(query)
+    |> Repo.preload(:user)
+  end
+
+  def list_user_workingtimes_start_end!(userID, start, clockEnd) do
+    query = from c in Workingtime, where: c.user_id == ^userID and c.start >= ^start and c.end <= ^clockEnd
+    Repo.all(query)
+    |> Repo.preload(:user)
   end
 
   @doc """
@@ -239,6 +313,12 @@ defmodule App.Result do
   """
   def get_workingtime!(id), do: Repo.get!(Workingtime, id)
 
+  def get_workingtime_by_user(userID, workingtimeID) do
+    query = from c in Workingtime, where: c.user_id == ^userID and c.id == ^workingtimeID
+    Repo.one(query)
+    |> Repo.preload(:user)
+  end
+
   @doc """
   Creates a workingtime.
 
@@ -251,9 +331,17 @@ defmodule App.Result do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_workingtime(attrs \\ %{}) do
+  def create_workingtime(attrs \\ %{}, userID) do
     %Workingtime{}
+    |> Map.put(:user_id, String.to_integer(userID))
     |> Workingtime.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def create_auto_workingtime(userID, clockStart, clockEnd) do
+    obj = %{start: clockStart, end: clockEnd, user_id: userID}
+    %Workingtime{}
+    |> Workingtime.changeset(obj)
     |> Repo.insert()
   end
 
