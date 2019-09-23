@@ -16,6 +16,8 @@ defmodule App.Result.User do
     field :password_confirmation, :string, virtual: true
     has_many :clocks, App.Result.Clock
     has_many :workingtimes, App.Result.Workingtime
+    has_many :manage, App.Result.Manage
+    has_many :member, App.Result.Member
 
     timestamps()
   end
