@@ -187,4 +187,185 @@ defmodule App.ResultTest do
       assert %Ecto.Changeset{} = Result.change_workingtime(workingtime)
     end
   end
+
+  describe "teams" do
+    alias App.Result.Team
+
+    @valid_attrs %{name: "some name"}
+    @update_attrs %{name: "some updated name"}
+    @invalid_attrs %{name: nil}
+
+    def team_fixture(attrs \\ %{}) do
+      {:ok, team} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Result.create_team()
+
+      team
+    end
+
+    test "list_teams/0 returns all teams" do
+      team = team_fixture()
+      assert Result.list_teams() == [team]
+    end
+
+    test "get_team!/1 returns the team with given id" do
+      team = team_fixture()
+      assert Result.get_team!(team.id) == team
+    end
+
+    test "create_team/1 with valid data creates a team" do
+      assert {:ok, %Team{} = team} = Result.create_team(@valid_attrs)
+      assert team.name == "some name"
+    end
+
+    test "create_team/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Result.create_team(@invalid_attrs)
+    end
+
+    test "update_team/2 with valid data updates the team" do
+      team = team_fixture()
+      assert {:ok, %Team{} = team} = Result.update_team(team, @update_attrs)
+      assert team.name == "some updated name"
+    end
+
+    test "update_team/2 with invalid data returns error changeset" do
+      team = team_fixture()
+      assert {:error, %Ecto.Changeset{}} = Result.update_team(team, @invalid_attrs)
+      assert team == Result.get_team!(team.id)
+    end
+
+    test "delete_team/1 deletes the team" do
+      team = team_fixture()
+      assert {:ok, %Team{}} = Result.delete_team(team)
+      assert_raise Ecto.NoResultsError, fn -> Result.get_team!(team.id) end
+    end
+
+    test "change_team/1 returns a team changeset" do
+      team = team_fixture()
+      assert %Ecto.Changeset{} = Result.change_team(team)
+    end
+  end
+
+  describe "manage" do
+    alias App.Result.Manage
+
+    @valid_attrs %{team_id: 42, user_id: 42}
+    @update_attrs %{team_id: 43, user_id: 43}
+    @invalid_attrs %{team_id: nil, user_id: nil}
+
+    def manage_fixture(attrs \\ %{}) do
+      {:ok, manage} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Result.create_manage()
+
+      manage
+    end
+
+    test "list_manage/0 returns all manage" do
+      manage = manage_fixture()
+      assert Result.list_manage() == [manage]
+    end
+
+    test "get_manage!/1 returns the manage with given id" do
+      manage = manage_fixture()
+      assert Result.get_manage!(manage.id) == manage
+    end
+
+    test "create_manage/1 with valid data creates a manage" do
+      assert {:ok, %Manage{} = manage} = Result.create_manage(@valid_attrs)
+      assert manage.team_id == 42
+      assert manage.user_id == 42
+    end
+
+    test "create_manage/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Result.create_manage(@invalid_attrs)
+    end
+
+    test "update_manage/2 with valid data updates the manage" do
+      manage = manage_fixture()
+      assert {:ok, %Manage{} = manage} = Result.update_manage(manage, @update_attrs)
+      assert manage.team_id == 43
+      assert manage.user_id == 43
+    end
+
+    test "update_manage/2 with invalid data returns error changeset" do
+      manage = manage_fixture()
+      assert {:error, %Ecto.Changeset{}} = Result.update_manage(manage, @invalid_attrs)
+      assert manage == Result.get_manage!(manage.id)
+    end
+
+    test "delete_manage/1 deletes the manage" do
+      manage = manage_fixture()
+      assert {:ok, %Manage{}} = Result.delete_manage(manage)
+      assert_raise Ecto.NoResultsError, fn -> Result.get_manage!(manage.id) end
+    end
+
+    test "change_manage/1 returns a manage changeset" do
+      manage = manage_fixture()
+      assert %Ecto.Changeset{} = Result.change_manage(manage)
+    end
+  end
+
+  describe "member" do
+    alias App.Result.Member
+
+    @valid_attrs %{team_id: 42, user_id: 42}
+    @update_attrs %{team_id: 43, user_id: 43}
+    @invalid_attrs %{team_id: nil, user_id: nil}
+
+    def member_fixture(attrs \\ %{}) do
+      {:ok, member} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Result.create_member()
+
+      member
+    end
+
+    test "list_member/0 returns all member" do
+      member = member_fixture()
+      assert Result.list_member() == [member]
+    end
+
+    test "get_member!/1 returns the member with given id" do
+      member = member_fixture()
+      assert Result.get_member!(member.id) == member
+    end
+
+    test "create_member/1 with valid data creates a member" do
+      assert {:ok, %Member{} = member} = Result.create_member(@valid_attrs)
+      assert member.team_id == 42
+      assert member.user_id == 42
+    end
+
+    test "create_member/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Result.create_member(@invalid_attrs)
+    end
+
+    test "update_member/2 with valid data updates the member" do
+      member = member_fixture()
+      assert {:ok, %Member{} = member} = Result.update_member(member, @update_attrs)
+      assert member.team_id == 43
+      assert member.user_id == 43
+    end
+
+    test "update_member/2 with invalid data returns error changeset" do
+      member = member_fixture()
+      assert {:error, %Ecto.Changeset{}} = Result.update_member(member, @invalid_attrs)
+      assert member == Result.get_member!(member.id)
+    end
+
+    test "delete_member/1 deletes the member" do
+      member = member_fixture()
+      assert {:ok, %Member{}} = Result.delete_member(member)
+      assert_raise Ecto.NoResultsError, fn -> Result.get_member!(member.id) end
+    end
+
+    test "change_member/1 returns a member changeset" do
+      member = member_fixture()
+      assert %Ecto.Changeset{} = Result.change_member(member)
+    end
+  end
 end

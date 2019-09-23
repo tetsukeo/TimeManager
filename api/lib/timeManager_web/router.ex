@@ -28,6 +28,9 @@ defmodule AppWeb.Router do
     resources "/workingtimes", WorkingtimeController, except: [:new, :edit, :index, :show, :create]
     get "/clocks/:userID", ClockController, :show
     post "/clocks/:userID", ClockController, :create
+    resources "/teams", TeamController, except: [:new, :edit]
+    resources "/manage", ManageController, except: [:new, :edit]  #Temporaire, à l'usage, tout devrait passer par les routes teams
+    resources "/member", MemberController, except: [:new, :edit]  #Temporaire, à l'usage, tout devrait passer par les routes teams
   end
 end
 

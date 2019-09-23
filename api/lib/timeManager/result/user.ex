@@ -1,10 +1,6 @@
 defmodule App.Result.User do
   use Ecto.Schema
-
-
-
   import Ecto.Changeset
-
   import Comeonin.Bcrypt, only: [hashpwsalt: 1]
 
   schema "users" do
