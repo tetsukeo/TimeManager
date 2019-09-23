@@ -1,15 +1,36 @@
 <template>
     <div class="search">
-        <input type="text" class="searchTerm" placeholder="What are you looking for?">
+     <!--   <input type="text" class="searchTerm" placeholder="What are you looking for?">
         <button type="submit" class="searchButton">
             <img src="./../assets/imgs/search.png" style="width: 25px">
-        </button>
+        </button>-->
+        <b-form-input list="my-list-id"></b-form-input>
+
+        <datalist id="my-list-id">
+            <option>Manual Option</option>
+            <option v-for="info in infos" >{{ info.email }}</option>
+        </datalist>
     </div>
 </template>
 
 <script>
+    import axios from "axios"
     export default {
-        name: "SearchBar"
+        name: "SearchBar",
+        data () {
+            return {
+                infos: null,
+                sizes: ['Small', 'Medium', 'Large', 'Extra Large']
+            }
+        },
+        mounted() {
+            axios
+                .get('http://127.0.0.1:4000/api/users').then(response => {
+                this.infos = JSON.stringify(response.data.data);
+                this.infos = JSON.parse(this.infos)
+
+                }).catch(e=>console.log(e))
+        }
     }
 </script>
 
