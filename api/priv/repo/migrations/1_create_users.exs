@@ -11,5 +11,6 @@ defmodule App.Repo.Migrations.CreateUsers do
         timestamps()
       end
       create constraint("users", "check_email_format", check: "email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'")
+      create unique_index(:users, [:email])
     end
   end
