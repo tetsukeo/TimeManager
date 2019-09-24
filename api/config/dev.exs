@@ -2,9 +2,9 @@ use Mix.Config
 
 # Configure your database
 config :timeManager, App.Repo,
-  username: "root",
-  password: "root",
-  database: "timemanager",
+  username: "postgres",
+  password: "postgres",
+  database: "bdd",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
