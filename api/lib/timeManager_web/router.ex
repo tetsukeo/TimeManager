@@ -4,6 +4,7 @@ defmodule AppWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+
   end
 
   pipeline :jwt_authenticated do
@@ -13,7 +14,7 @@ defmodule AppWeb.Router do
   scope "/api", AppWeb do
     pipe_through :api
     resources "/users", UserController, only: [:create, :show] # maybe replace by resources “/users", UserController, only: [:create, :show]
-    
+
     post "/sign_up", UserController, :create
     post "/sign_in", UserController, :sign_in
   end

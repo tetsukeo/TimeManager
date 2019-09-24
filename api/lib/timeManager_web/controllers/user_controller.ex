@@ -29,10 +29,10 @@ defmodule AppWeb.UserController do
     end
   end
 
-  #def show(conn, %{"id" => id}) do
-   # user = Result.get_user!(id)
-   # render(conn, "show.json", user: user)
-  #end
+  def show(conn, %{"id" => id}) do
+    user = Result.get_user!(id)
+   render(conn, "show.json", user: user)
+  end
 
   def show(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
@@ -41,7 +41,6 @@ defmodule AppWeb.UserController do
 
   def update(conn, %{"id" => id, "user" => user_params}) do
     user = Result.get_user!(id)
-
     with {:ok, %User{} = user} <- Result.update_user(user, user_params) do
       render(conn, "show.json", user: user)
     end
@@ -49,7 +48,6 @@ defmodule AppWeb.UserController do
 
   def delete(conn, %{"id" => id}) do
     user = Result.get_user!(id)
-
     with {:ok, %User{}} <- Result.delete_user(user) do
       send_resp(conn, :no_content, "")
     end
@@ -63,4 +61,8 @@ defmodule AppWeb.UserController do
         {:error, :unauthorized}
     end
   end
+
+
+
+
 end

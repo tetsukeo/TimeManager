@@ -13,13 +13,15 @@ defmodule AppWeb.UserView do
   def render("user.json", %{user: user}) do
     %{id: user.id,
       username: user.username,
-      email: user.email#,
+      email: user.email,
+      role: user.role
       #password_hash: user.password_hash
     }
   end
 
   def render("jwt.json", %{jwt: jwt}) do
     %{jwt: jwt}
-  end
+    end
 
 end
+

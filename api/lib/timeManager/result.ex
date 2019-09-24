@@ -18,6 +18,7 @@ defmodule App.Result do
       {:ok, user} ->
         Guardian.encode_and_sign(user)
       _ ->
+
         {:error, :unauthorized}
     end
   end
