@@ -21,6 +21,7 @@ defmodule AppWeb.Router do
   scope "/api", AppWeb do
     pipe_through [:api, :jwt_authenticated]
     get "/users", UserController, :index
+    get "/users/:id", UserController, :show
     delete "/users", UserController, :delete
     get "/workingtimes/:userID", WorkingtimeController, :index
     get "/workingtimes/:userID/:workingtimeID", WorkingtimeController, :show

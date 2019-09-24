@@ -3,11 +3,11 @@ defmodule AppWeb.ManageView do
   alias AppWeb.ManageView
 
   def render("index.json", %{manage: manage}) do
-    %{data: render_many(manage, ManageView, "manage.json")}
+    render_many(manage, ManageView, "manage.json")
   end
 
   def render("show.json", %{manage: manage}) do
-    %{data: render_one(manage, ManageView, "manage.json")}
+    render_one(manage, ManageView, "manage.json")
   end
 
   def render("manage.json", %{manage: manage}) do
