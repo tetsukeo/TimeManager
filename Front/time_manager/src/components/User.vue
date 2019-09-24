@@ -191,6 +191,8 @@ export default {
     setValue() {
       this.tmpInfoUser.surname = this.infoUser.surname;
       this.tmpInfoUser.mail = this.infoUser.mail;
+      console.log(this.tmpInfoUser);
+      
     },
     validEmail: function(email) {
       var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
