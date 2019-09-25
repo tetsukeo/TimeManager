@@ -8,6 +8,7 @@ defmodule App.Repo.Migrations.CreateUsers do
         add :password_hash, :string
         add :password, :string, virtual: true
         add :password_confirmation, :string, virtual: true
+        add :role, :string
         timestamps()
       end
       create constraint("users", "check_email_format", check: "email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'")

@@ -10,8 +10,11 @@ defmodule App.Result.User do
     field :password_hash, :string
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
+    field :role, :string, default: "user"
     has_many :clocks, App.Result.Clock
     has_many :workingtimes, App.Result.Workingtime
+    #many_to_many :teams, App.Result.Team, join_through: "manage"
+    #many_to_many :teams, App.Result.Team, join_through: "member"
     
     timestamps()
   end
