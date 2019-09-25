@@ -7,10 +7,14 @@ import router from './router';
 import store from './store';
 import Vuex from 'vuex';
 import App from './App';
+import VueResource from 'vue-resource';
+
 
 Vue.use(VueRouter);
 Vue.use(BootstrapVue);
 Vue.use(Vuex);
+Vue.use(VueResource);
+
 
 require('./assets/styles.css');
 Vue.config.productionTip = false;
