@@ -7,7 +7,7 @@
     <WorkingTime @setPeriod="setPeriod" class="block-container"></WorkingTime>
 
     <ClockManager :infoUser="infoUser" @setStatus="setStatus" class="block-container"></ClockManager>
-    <ClockManager :infoUser="infoUser" @setStatus="setStatus" class="block-container"></ClockManager>
+    <UserManager class="block-container"></UserManager>
   </div>
 </template>
 
@@ -52,6 +52,7 @@ import WorkingTimes from "./../components/WorkingTimes";
 import ChartManager from "./../components/ChartManager";
 import User from "./../components/User";
 import SearchBar from "./../components/SearchBar";
+import UserManager from "./../components/UserManager";
 import moment from "moment";
 
 export default {
@@ -62,7 +63,8 @@ export default {
     ChartManager,
     WorkingTimes,
     WorkingTime,
-    ClockManager
+    ClockManager,
+    UserManager
   },
   data() {
     return {
@@ -86,6 +88,8 @@ export default {
 
   methods: {
     setColor(color) {
+      console.log(localStorage.token);
+      
       this.colors.color = color;
       this.$refs.donut.setColor();
 
