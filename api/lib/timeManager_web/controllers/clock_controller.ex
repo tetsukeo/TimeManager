@@ -11,7 +11,7 @@ defmodule AppWeb.ClockController do
     #ELSE DO WHAT THE FUNCTION USED TO
     existing_clock = List.last(Result.get_clock_by_userID!(userID))
     if (existing_clock != nil) do
-      Result.create_auto_workingtime(clock_params["time"], existing_clock.time, String.to_integer(userID))
+      Result.create_auto_workingtime( String.to_integer(userID), existing_clock.time, clock_params["time"])
       with {:ok, %Clock{}} <- Result.delete_clock(existing_clock) do
           send_resp(conn, :created, "")
       end
