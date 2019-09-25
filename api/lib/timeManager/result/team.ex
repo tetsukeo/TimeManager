@@ -4,8 +4,6 @@ defmodule App.Result.Team do
 
   schema "teams" do
     field :name, :string
-    has_many :manage, App.Result.Manage
-    has_many :member, App.Result.Member
 
     timestamps()
   end
