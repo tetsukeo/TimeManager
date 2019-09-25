@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import jwt_decode from 'jwt-decode';
 
 export default {
   
@@ -59,6 +60,12 @@ export default {
       }
 
       localStorage.token = req.body.jwt;
+      
+      var decoded = jwt_decode(localStorage.token);
+      localStorage.userId = decoded.sub[0];
+      localStorage.surname = decoded.sub[1];
+      localStorage.mail = decoded.sub[2];    
+
       this.error = false;
 
       this.$router.replace(this.$route.query.redirect || "/dashboard");

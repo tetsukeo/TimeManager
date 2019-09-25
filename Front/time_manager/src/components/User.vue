@@ -135,6 +135,12 @@ export default {
       tmpInfoUser: {
         surname: "",
         mail: ""
+      },
+      userInfo : {
+        id : 0,
+        surname: "",
+        mail: "",
+        state: false
       }
     };
   },
@@ -144,14 +150,18 @@ export default {
     }
   },
   mounted() {
-    axios.get("http://localhost:4000/api/users").then(response => {
-      this.info = response.data;
-    });
+      this.setUser();
   },
   components: {
     ColorPicker
   },
   methods: {
+    setUser() {
+      console.log(localStorage.user[0]);
+      this.infoUser.id = localStorage.userId;
+      this.infoUser.surname = localStorage.surname;
+      this.infoUser.mail = localStorage.mail;      
+    },
     setColor() {
       this.$emit("setColor", this.color);
     },
