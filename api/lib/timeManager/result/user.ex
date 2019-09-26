@@ -1,7 +1,7 @@
 defmodule App.Result.User do
   use Ecto.Schema
   import Ecto.Changeset
-  import Comeonin.Bcrypt, only: [hashpwsalt: 1]
+  # import Comeonin.Bcrypt, only: [hashpwsalt: 1]
 
   schema "users" do
 
@@ -13,7 +13,7 @@ defmodule App.Result.User do
     field :role, :string, default: "user"
     has_many :clocks, App.Result.Clock
     has_many :workingtimes, App.Result.Workingtime
-    many_to_many :teams, App.Result.Team, join_through: "member"
+    many_to_many :teams, App.Result.Team, join_through: "member", on_replace: :delete
     
     timestamps()
   end
@@ -28,6 +28,12 @@ defmodule App.Result.User do
     |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)
     |> put_password_hash
+  end
+
+  def changeset_update_teams(user, teams) do
+    user
+    |> cast(%{}, @required_fields)
+    |> put_assoc(:teams, teams)
   end
 
   defp put_password_hash(changeset) do
