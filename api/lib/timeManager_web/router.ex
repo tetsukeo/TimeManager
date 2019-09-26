@@ -3,6 +3,7 @@ defmodule AppWeb.Router do
   alias App.Guardian
 
   pipeline :api do
+    plug CORSPlug, origin: "*"
     plug :accepts, ["json"]
 
   end
@@ -23,7 +24,7 @@ defmodule AppWeb.Router do
     pipe_through [:api, :jwt_authenticated]
     get "/users", UserController, :index
     get "/users/:id", UserController, :show
-    delete "/users", UserController, :delete
+    delete "/users/:id", UserController, :delete
     get "/workingtimes/:userID", WorkingtimeController, :index
     get "/workingtimes/:userID/:workingtimeID", WorkingtimeController, :show
     post "/workingtimes/:userID", WorkingtimeController, :create
