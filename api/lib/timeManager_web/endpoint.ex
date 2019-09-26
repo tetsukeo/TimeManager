@@ -42,7 +42,7 @@ defmodule AppWeb.Endpoint do
 
   plug Corsica,
        allow_headers: ["access-control-allow-headers", "access-control-allow-origin", "content-type"],
-       origins: "http://localhost:8080",
+       origins: ["http://localhost:8080", "http://localhost:4000"],
        log: [rejected: :error, invalid: :warn, accepted: :debug]
 
   plug AppWeb.Router
