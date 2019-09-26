@@ -15,6 +15,7 @@
 
 <script>
     import axios from "axios"
+    import HTTP from './httpCommon'
     export default {
         name: "SearchBar",
         data () {
@@ -24,11 +25,16 @@
             }
         },
         mounted() {
-            axios
-                .get('http://127.0.0.1:4000/api/users').then(response => {
+            console.log("LoL");
+            const auth = {
+        headers: {Authorization:'JWT ' + localStorage.token}
+        
+    };
+    console.log(localStorage.token);
+                axios.get('http://127.0.0.1:4000/api/clocks/1', { headers: { Authorization: `Bearer ${localStorage.token}` }}).then(response => {
                 this.infos = JSON.stringify(response.data.data);
                 this.infos = JSON.parse(this.infos)
-
+                console.log("EHoH");
                 }).catch(e=>console.log(e))
         }
     }

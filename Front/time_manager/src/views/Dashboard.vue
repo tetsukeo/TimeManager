@@ -1,6 +1,11 @@
 <template>
   <div class="container-row">
-    <User @setColor="setColor" :infoUser="infoUser" class="block-container item-a" @setPeriod="setPeriod"></User>
+    <User
+      @setColor="setColor"
+      :infoUser="infoUser"
+      class="block-container item-a"
+      @setPeriod="setPeriod"
+    ></User>
     <ChartManager :color="colors" ref="donut" class="block-container"></ChartManager>
 
     <WorkingTimes :datePeriod="period" :color="colors" ref="form" class="block-container item-b"></WorkingTimes>
@@ -30,6 +35,7 @@
   grid-auto-flow: dense;
   grid-gap: 10px;
 }
+
 @media screen and (max-width: 1300px) {
   .item-b {
     grid-column: 1 / span 2;
@@ -78,10 +84,10 @@ export default {
         color: "#d0bb48"
       },
       infoUser: {
-          surname: "Batman",
-          id: 69,
-          mail: "batman.tropchou@malaise.com",
-          status: false
+        surname: "Batman",
+        id: 69,
+        mail: "batman.tropchou@malaise.com",
+        status: false
       }
     };
   },
@@ -89,7 +95,7 @@ export default {
   methods: {
     setColor(color) {
       console.log(localStorage.token);
-      
+
       this.colors.color = color;
       this.$refs.donut.setColor();
 
@@ -101,11 +107,11 @@ export default {
       this.$refs.form.setPeriod();
     },
     setStatus() {
-        if (this.infoUser.status) {
-            this.infoUser.status = false;
-        } else {
-            this.infoUser.status = true;
-        }
+      if (this.infoUser.status) {
+        this.infoUser.status = false;
+      } else {
+        this.infoUser.status = true;
+      }
     }
   }
 };
