@@ -1,6 +1,6 @@
 <template>
   <div>
-    <SearchBar></SearchBar>
+    <SearchBar @setUser="setUser"></SearchBar>
     <div class="user-info">
       <div>
         <p>Username :</p>
@@ -82,6 +82,13 @@ export default {
     };
   },
   methods: {
+    setUser(info) {
+      console.log("setUser");
+      console.log(info);
+      this.infoUserManager.surname = info.username;
+      this.infoUserManager.mail = info.email;
+      this.infoUserManager.id = info.id;
+    },
     checkFormValidity() {      
       const validNameManager = this.$refs.formManager.checkValidity();
       this.nameStateManager = validNameManager ? true : false;
