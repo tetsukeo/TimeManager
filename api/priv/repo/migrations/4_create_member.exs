@@ -8,6 +8,9 @@ defmodule App.Repo.Migrations.CreateMember do
       add :is_manager, :boolean, default: false
     end
 
+    create(index(:member, [:user_id]))
+    create(index(:member, [:team_id]))
+
     create unique_index(:member, [:user_id, :team_id])
   end
 end

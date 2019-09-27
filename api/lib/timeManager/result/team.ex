@@ -4,7 +4,7 @@ defmodule App.Result.Team do
 
   schema "teams" do
     field :name, :string
-    # many_to_many :teams, App.Result.Team, join_through: "member"
+    many_to_many :users, App.Result.User, join_through: "member", on_replace: :delete
 
     timestamps()
   end

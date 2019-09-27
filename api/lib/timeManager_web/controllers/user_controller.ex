@@ -31,17 +31,18 @@ defmodule AppWeb.UserController do
 
   def show(conn, %{"id" => id}) do
     user = Result.get_user!(id)
-    conn
-    |> render(conn, "show.json", user: user)
+    render(conn, "show.json", user: user)
   end
 
   def show(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
-    conn |> render("user.json", user: user)
+    render("user.json", user: user)
   end
 
   def update(conn, %{"id" => id, "user" => user_params}) do
+    IO.inspect("HELLO")
     user = Result.get_user!(id)
+    IO.inspect(user)
     with {:ok, %User{} = user} <- Result.update_user(user, user_params) do
       render(conn, "show.json", user: user)
     end
