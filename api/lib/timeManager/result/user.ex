@@ -32,7 +32,7 @@ defmodule App.Result.User do
 
   def changeset_update_teams(user, teams) do
     user
-    |> cast(%{}, @required_fields)
+    |> cast(%{}, [:user_id, :team_id])
     |> put_assoc(:teams, teams)
   end
 

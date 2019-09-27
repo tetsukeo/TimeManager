@@ -14,8 +14,7 @@ defmodule AppWeb.Router do
 
   scope "/api", AppWeb do
     pipe_through :api
-    resources "/users", UserController, only: [:create, :show] # maybe replace by resources “/users", UserController, only: [:create, :show]
-
+    resources "/users", UserController, only: [:create, :show]
     post "/sign_up", UserController, :create
     post "/sign_in", UserController, :sign_in
   end
@@ -33,6 +32,9 @@ defmodule AppWeb.Router do
     get "/clocks/:userID", ClockController, :show
     post "/clocks/:userID", ClockController, :create
     resources "/teams", TeamController, except: [:new, :edit]
+    post "/teams/:teamID/members/:userID", TeamController, :add_member
+    post "/teams/:teamID/managers/:userID", TeamController, :add_manager
+    get "/teams/:teamID/workingtimes", TeamController, :get_team_workingtimes
   end
 end
 

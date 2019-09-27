@@ -495,4 +495,37 @@ defmodule App.Result do
     Team.changeset(team, %{})
   end
 
+  alias App.Result.Member
+
+  def add_member(userID, teamID) do
+    obj = %{user_id: userID, team_id: teamID}
+    %Member{}
+    |> Member.changeset(obj)
+    |> Repo.insert()
+  end
+
+  def add_manager(userID, teamID) do
+    obj = %{user_id: userID, team_id: teamID, is_manager: true}
+    %Member{}
+    |> Member.changeset(obj)
+    |> Repo.insert()
+  end
+
+  def set_to_manager(%Member{} = member, userID, teamID) do
+    obj = %{user_id: userID, team_id: teamID, is_manager: true}
+    member
+    |> Member.changeset(obj)
+    |> Repo.update()
+  end
+
+  def get_team_member(userID, teamID) do
+    query = from c in Member, where: c.user_id == ^userID and c.team_id == ^teamID
+    Repo.one(query)
+  end
+
+  def list_team_workingtimes(teamID) do
+    query = from c in Workingtime, join: d in Member, on: c.user_id == d.user_id, where: d.team_id == ^teamID#, order_by: q.start
+    Repo.all(query)
+  end
+
 end

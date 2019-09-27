@@ -40,9 +40,7 @@ defmodule AppWeb.UserController do
   end
 
   def update(conn, %{"id" => id, "user" => user_params}) do
-    IO.inspect("HELLO")
     user = Result.get_user!(id)
-    IO.inspect(user)
     with {:ok, %User{} = user} <- Result.update_user(user, user_params) do
       render(conn, "show.json", user: user)
     end

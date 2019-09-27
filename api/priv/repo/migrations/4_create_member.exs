@@ -6,6 +6,8 @@ defmodule App.Repo.Migrations.CreateMember do
       add :user_id, references(:users)
       add :team_id, references(:teams)
       add :is_manager, :boolean, default: false
+
+      timestamps()
     end
 
     create(index(:member, [:user_id]))
