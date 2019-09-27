@@ -28,3 +28,4 @@ timeManager-*.tar
 /priv/static/
 
 .idea*
+dev.exs
