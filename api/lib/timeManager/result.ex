@@ -524,7 +524,22 @@ defmodule App.Result do
   end
 
   def list_team_workingtimes(teamID) do
-    query = from c in Workingtime, join: d in Member, on: c.user_id == d.user_id, where: d.team_id == ^teamID#, order_by: q.start
+    query = from c in Workingtime, join: d in Member, on: c.user_id == d.user_id, where: d.team_id == ^teamID
+    Repo.all(query)
+  end
+
+  def list_team_workingtimes_start(teamID, startClock) do
+    query = from c in Workingtime, join: d in Member, on: c.user_id == d.user_id, where: d.team_id == ^teamID and c.start >= ^startClock
+    Repo.all(query)
+  end
+
+  def list_team_workingtimes_end(teamID, endClock) do
+    query = from c in Workingtime, join: d in Member, on: c.user_id == d.user_id, where: d.team_id == ^teamID and c.end <= ^endClock
+    Repo.all(query)
+  end
+
+  def list_team_workingtimes_start_end(teamID, startClock, endClock) do
+    query = from c in Workingtime, join: d in Member, on: c.user_id == d.user_id, where: d.team_id == ^teamID and c.start >= ^startClock and c.end <= ^endClock
     Repo.all(query)
   end
 
