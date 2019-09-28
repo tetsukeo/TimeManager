@@ -10,6 +10,7 @@ defmodule AppWeb.TeamController do
     name = Map.get(_params, "name", "")
     cond do
       name != "" -> render(conn, "index.json", teams: Result.list_teams_name(name))
+      true -> render(conn, "index.json", teams: Result.list_teams())
     end
     teams = Result.list_teams()
     render(conn, "index.json", teams: teams)
@@ -44,4 +45,31 @@ defmodule AppWeb.TeamController do
       send_resp(conn, :no_content, "")
     end
   end
+
+  alias App.Result.Member
+
+  def add_member(conn, %{"userID" => userID, "teamID" => teamID}) do
+    with {:ok, %Member{}} <- Result.add_member(userID, teamID) do
+      send_resp(conn, :created, "\"Member successfully affected\"")
+    end
+  end
+
+  def add_manager(conn, %{"userID" => userID, "teamID" => teamID}) do
+    exists = Result.get_team_member(userID, teamID)
+    if (exists == nil) do
+      with {:ok, %Member{}} <- Result.add_manager(userID, teamID) do
+        send_resp(conn, :created, "\"Manager successfully affected\"")
+      end
+    else
+      with {:ok, %Member{}} <- Result.set_to_manager(exists, userID, teamID) do
+        send_resp(conn, :created, "\"Member has been successfully set to manager\"")
+      end
+    end
+        
+  end
+
+  def get_team_workingtimes(conn, %{"teamID" => teamID}) do
+    render(conn, AppWeb.WorkingtimeView, "index.json", workingtimes: Result.list_team_workingtimes(teamID))
+  end
+
 end
