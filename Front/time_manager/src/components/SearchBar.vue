@@ -29,7 +29,6 @@ export default {
       .then(response => {
         this.infos = JSON.stringify(response.data);
         this.infos = JSON.parse(this.infos);
-        console.log(this.infos);
       })
       .catch(e => console.log(e));
   },
@@ -40,7 +39,6 @@ export default {
             if (this.infos[i].email == this.select ||
             this.infos[i].username == this.select ||
             this.infos[i].id == this.select) {
-                console.log(this.infos[i]);
                 this.$emit("setUser", this.infos[i]);
             }
             i = i + 1;

@@ -77,7 +77,7 @@ export default {
       period: {
         date1: new Date(),
         date2: moment()
-          .add(10, "days")
+          .subtract(10, "days")
           .calendar()
       },
       colors: {
@@ -91,20 +91,23 @@ export default {
       }
     };
   },
-
+  mounted() {
+    this.infoUser.id = localStorage.userId;
+    this.infoUser.surname = localStorage.surname;
+    this.infoUser.mail = localStorage.mail;
+    this.infoUser.status = localStorage.status;
+    this.infoUser.role = localStorage.role;
+  },
   methods: {
     setColor(color) {
-      console.log(localStorage.token);
-
       this.colors.color = color;
       this.$refs.donut.setColor();
-
       this.$refs.form.setColor();
     },
     setPeriod(date) {
       this.period.date1 = date.date1;
       this.period.date2 = date.date2;
-      this.$refs.form.setPeriod();
+      this.$refs.form.getUser();
     },
     setStatus() {
       if (this.infoUser.status) {

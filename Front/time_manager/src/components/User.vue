@@ -8,12 +8,14 @@
         <p>Username :</p>
         <p>UserId :</p>
         <p>Mail :</p>
-        <p>Status</p>
+        <p>Role :</p>
+        <p>Status :</p>
       </div>
       <div>
         <p class="userline">{{infoUser.surname}}</p>
         <p class="userline">{{infoUser.id}}</p>
         <p class="userline">{{infoUser.mail}}</p>
+        <p class="userline">{{infoUser.role}}</p>
         <p class="userline" v-if="infoUser.status">Working</p>
         <p class="userline" v-if="!infoUser.status">Not working</p>
       </div>
@@ -136,12 +138,6 @@ export default {
         surname: "",
         mail: ""
       },
-      userInfo : {
-        id : 0,
-        surname: "",
-        mail: "",
-        state: false
-      }
     };
   },
   props: {
@@ -149,18 +145,30 @@ export default {
       type: Object
     }
   },
-  mounted() {
-      this.setUser();
-  },
   components: {
     ColorPicker
   },
   methods: {
     setUser() {
-      console.log(localStorage.user[0]);
       this.infoUser.id = localStorage.userId;
       this.infoUser.surname = localStorage.surname;
-      this.infoUser.mail = localStorage.mail;      
+      this.infoUser.mail = localStorage.mail;
+      this.infoUser.status = localStorage.status;
+      this.infoUser.role = localStorage.role;
+    },
+    getClocks() {
+      Axios.get("http://127.0.0.1:4000/api/clocks/" + this.infoUser.id, {
+        headers: { Authorization: `Bearer ${localStorage.token}` }
+      })
+      .then(response => {
+        this.infos = JSON.stringify(response.data);
+        this.infos = JSON.parse(this.infos);
+        if (this.infos.length != 0) this.infoUser.status = true;
+        else this.infoUser.status = false;
+        
+        this.vue = true;
+      })
+      .catch(e => console.log(e));
     },
     setColor() {
       this.$emit("setColor", this.color);
@@ -201,7 +209,6 @@ export default {
     setValue() {
       this.tmpInfoUser.surname = this.infoUser.surname;
       this.tmpInfoUser.mail = this.infoUser.mail;
-      console.log(this.tmpInfoUser);
       
     },
     validEmail: function(email) {

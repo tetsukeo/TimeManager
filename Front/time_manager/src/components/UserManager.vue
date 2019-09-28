@@ -1,17 +1,19 @@
 <template>
   <div>
     <SearchBar @setUser="setUser"></SearchBar>
-    <div class="user-info">
+    <div class="user-info" v-if="vue">
       <div>
         <p>Username :</p>
         <p>UserId :</p>
         <p>Mail :</p>
+        <p>Role :</p>
         <p>Status :</p>
       </div>
       <div>
         <p class="userline">{{infoUserManager.surname}}</p>
         <p class="userline">{{infoUserManager.id}}</p>
         <p class="userline">{{infoUserManager.mail}}</p>
+        <p class="userline">{{infoUserManager.role}}</p>
         <p class="userline" v-if="infoUserManager.status">Working</p>
         <p class="userline" v-if="!infoUserManager.status">Not working</p>
       </div>
@@ -41,12 +43,20 @@
               ></b-form-input>
             </b-form-group>
             <b-form-group
-              :state="nameStateManager"
+              :state="mailStateManager"
               label="Mail"
               label-for="mail-input"
               invalid-feedback="Mail is required"
             >
               <b-form-input v-model="tmpInfoUserManager.mail" id="mail-input" :state="mailStateManager" required></b-form-input>
+            </b-form-group>
+                        <b-form-group
+              :state="roleStateManager"
+              label="Role"
+              label-for="role-input"
+              invalid-feedback="Role is required"
+            >
+              <b-form-input v-model="tmpInfoUserManager.role" id="role-input" :state="roleStateManager" required></b-form-input>
             </b-form-group>
           </form>
         </b-modal>
@@ -57,13 +67,16 @@
 
 <script>
 import SearchBar from "./../components/SearchBar";
+import Axios from 'axios';
 
 export default {
   name: "userManager",
   components: { SearchBar },
   data() {
     return {
+      vue: false,
       nameStateManager: null,
+      roleStateManager: null,
       mailStateManager: null,
       submittedNames: [],
       info: null,
@@ -71,23 +84,38 @@ export default {
         surname: "test surname",
         mail: "test@mail.com",
         id: "2",
-        status: false
+        status: false,
+        role: ""
       },
       tmpInfoUserManager: {
         surname: "",
         mail: "",
         id: "",
+        role: "",
         status: false
       }
     };
   },
   methods: {
     setUser(info) {
-      console.log("setUser");
-      console.log(info);
       this.infoUserManager.surname = info.username;
       this.infoUserManager.mail = info.email;
       this.infoUserManager.id = info.id;
+      this.infoUserManager.role = info.role;
+      this.getClock();
+    },
+    getClock() {
+      Axios.get("http://127.0.0.1:4000/api/clocks/" + this.infoUserManager.id, {
+        headers: { Authorization: `Bearer ${localStorage.token}` }
+      })
+      .then(response => {
+        this.infos = JSON.stringify(response.data);
+        this.infos = JSON.parse(this.infos);
+        if (this.infos.length !== 0) this.infoUserManager.status = true;
+        else this.infoUserManager.status = false;
+        this.vue = true;                
+      })
+      .catch(e => console.log(e));
     },
     checkFormValidity() {      
       const validNameManager = this.$refs.formManager.checkValidity();
@@ -127,6 +155,7 @@ export default {
       
       this.tmpInfoUserManager.surname = this.infoUserManager.surname;
       this.tmpInfoUserManager.mail = this.infoUserManager.mail;
+      this.tmpInfoUserManager.role = this.infoUserManager.role;
       
     },
     validEmail: function(email) {

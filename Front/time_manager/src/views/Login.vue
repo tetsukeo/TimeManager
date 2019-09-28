@@ -29,10 +29,9 @@
 </template>
 
 <script>
-import jwt_decode from 'jwt-decode';
+import jwt_decode from "jwt-decode";
 
 export default {
-  
   name: "Login",
   data() {
     return {
@@ -44,27 +43,53 @@ export default {
   methods: {
     login() {
       this.$http
-        .post("http://localhost:4000/api/sign_in", { email: this.email, password: this.password })
+        .post("http://localhost:4000/api/sign_in", {
+          email: this.email,
+          password: this.password
+        })
         .then(request => this.loginSuccessful(request))
         .catch(() => this.loginFailed());
     },
     register() {
       this.$router.replace(this.$route.query.redirect || "/register");
     },
+    getClock() {
+      this.$http
+        .get("http://127.0.0.1:4000/api/clocks/" + localStorage.userId, {
+          headers: { Authorization: `Bearer ${localStorage.token}` }
+        })
+        .then(response => {
+          this.infos = JSON.stringify(response.data);
+          this.infos = JSON.parse(this.infos);
+          if (this.infos.length != 0) localStorage.status = true;
+          else localStorage.status = false;
+        })
+        .catch(e => console.log(e));
+    },
+    getUser() {
+      this.$http
+        .get("http://127.0.0.1:4000/api/users/" + localStorage.userId, {
+          headers: { Authorization: `Bearer ${localStorage.token}` }
+        })
+        .then(response => {
+          this.infos = JSON.stringify(response.data);
+          this.infos = JSON.parse(this.infos);
+          localStorage.role = this.infos.role;
+        })
+        .catch(e => console.log(e));
+    },
     loginSuccessful(req) {
-      
       if (!req.body.jwt) {
-        
         this.loginFailed();
         return;
       }
-
       localStorage.token = req.body.jwt;
-      
       var decoded = jwt_decode(localStorage.token);
       localStorage.userId = decoded.sub[0];
+      this.getUser();
       localStorage.surname = decoded.sub[1];
-      localStorage.mail = decoded.sub[2];    
+      localStorage.mail = decoded.sub[2];
+      this.getClock();
 
       this.error = false;
 

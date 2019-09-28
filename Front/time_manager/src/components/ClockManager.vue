@@ -5,6 +5,10 @@
   </div>
 </template>
 <script>
+import Axios from "axios";
+import Vue from "vue";
+import moment from "moment";
+
 export default {
   name: "ClockManager",
   props: {
@@ -14,6 +18,26 @@ export default {
   },
   methods: {
     setStatus() {
+      const now = moment(Date.now()).format("YYYY-MM-DD HH:mm:ss");
+
+      Axios.post(
+        "http://127.0.0.1:4000/api/clocks/" + this.infoUser.id,
+        {
+          clock: {
+            time: now
+          }
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.token}` }
+        }
+      )
+        .then(response => {
+          this.infos = JSON.stringify(response.data);
+          this.infos = JSON.parse(this.infos);
+          if (this.infos.length != 0) this.infoUser.status = true;
+          else this.infoUser.status = false;          
+        })
+        .catch(e => console.log(e));
       this.$emit("setStatus");
     }
   }
