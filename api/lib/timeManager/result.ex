@@ -543,4 +543,8 @@ defmodule App.Result do
     Repo.all(query)
   end
 
+  def delete_member(%Member{} = member) do
+    Repo.delete(member)
+  end
+
 end
