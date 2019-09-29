@@ -122,7 +122,7 @@ defmodule App.Result do
   """
   def update_user(%User{} = user, attrs) do
     user
-    |> User.changeset(attrs)
+    |> User.changeset_update(attrs)
     |> Repo.update()
   end
 

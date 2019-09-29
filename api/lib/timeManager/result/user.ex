@@ -30,6 +30,14 @@ defmodule App.Result.User do
     |> put_password_hash
   end
 
+  def changeset_update(user, attrs) do
+    user
+    |> cast(attrs, [:username, :email])
+    |> validate_required([:username, :email])
+    |> validate_format(:email, ~r/@/)
+    |> unique_constraint(:email)
+  end
+
   def changeset_update_teams(user, teams) do
     user
     |> cast(%{}, [:user_id, :team_id])
