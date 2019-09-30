@@ -1,7 +1,7 @@
 <template>
   <div class="search">
     <form v-on:submit.prevent="search_user">
-        <b-form-input v-model="select" placeholder="Search user"></b-form-input>
+      <b-form-input v-model="select" placeholder="Search user"></b-form-input>
     </form>
   </div>
 </template>
@@ -30,16 +30,30 @@ export default {
       .catch(e => console.log(e));
   },
   methods: {
+    makeToast(variant = null, title, message) {
+      this.$bvToast.toast(message, {
+        title: `${title || "default"}`,
+        variant: variant,
+        solid: true
+      });
+    },
     search_user() {
-        let i = 0;
-        while (this.infos[i]) {            
-            if (this.infos[i].email == this.select ||
-            this.infos[i].username == this.select ||
-            this.infos[i].id == this.select) {
-                this.$emit("setUser", this.infos[i]);
-            }
-            i = i + 1;
+      let i = 0;
+      let find = false;
+      while (this.infos[i]) {
+        if (
+          this.infos[i].email == this.select ||
+          this.infos[i].username == this.select ||
+          this.infos[i].id == this.select
+        ) {
+          find = true;
+          this.$emit("setUser", this.infos[i]);
         }
+        i = i + 1;
+      }
+      if (find == false) {
+        this.makeToast("danger", "Error", "No team");
+      }
     }
   }
 };

@@ -256,44 +256,43 @@ export default {
       let i = 0;
       let find = false;
       while (this.teams.length > i && find == false) {
-        console.log(find);
-        
         if (
           this.tmpInfoUser.team == this.teams[i].id ||
           this.tmpInfoUser.team == this.teams[i].name
         ) {
+          let k = i;
           find = true;
-          console.log("Hey");
-      }
-              i++;
-
-      }
-      this.tmpInfoUser.team = "";
-      this.makeToast("danger", "Error", "Team not found");
-      Axios.post(
-            "http://127.0.0.1:4000/api/teams/14/members/1"/* +
-              this.teams[i].id +
+          Axios.post(
+            "http://127.0.0.1:4000/api/teams/" +
+              this.teams[k].id +
               "/members/" +
-              this.infoUser.id*/,
+              this.infoUser.id,
+            {} ,
             {
               headers: { Authorization: `Bearer ${localStorage.token}` }
             }
           )
             .then(response => {
-              console.log(response);
-              console.log("c'est bon");
+              console.log("okay");
+              console.log(this.teams[k]);
               
+              this.updateUser();
               
-            /*  this.updateUser();
               this.infoUser.mail = this.tmpInfoUser.mail;
               this.infoUser.surname = this.tmpInfoUser.surname;
-              this.infoUser.teamName = response;
+              this.infoUser.teamName = this.teams[k].name;
               localStorage.username = this.infoUser.surname;
               localStorage.mail = this.infoUser.mail;
-              return;*/
+              return;
             })
-            .catch(e => console.log("lol"));
-        
+            .catch(e => console.log(e));
+        }
+        i++;
+      }
+      this.tmpInfoUser.team = "";
+      if (find == false) {
+      this.makeToast("danger", "Error", "Team not found");
+      }
     },
     setTeam() {
       Axios.get("http://127.0.0.1:4000/api/teams", {
@@ -334,7 +333,6 @@ export default {
       if (!this.checkFormValidity()) {
         return;
       }
-
       if (this.tmpInfoUser.team != "") {
         this.setTeam();
       } else {
@@ -359,6 +357,10 @@ export default {
       var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return re.test(email);
     }
+  },
+  mounted() {
+    console.log(this.infoUser);
+    
   }
 };
 </script>
