@@ -34,6 +34,7 @@ defmodule AppWeb.Router do
     resources "/teams", TeamController, except: [:new, :edit]
     post "/teams/:teamID/members/:userID", TeamController, :add_member
     post "/teams/:teamID/managers/:userID", TeamController, :add_manager
+    delete "/teams/:teamID/members/:userID", TeamController, :del_member
     get "/teams/:teamID/workingtimes", TeamController, :get_team_workingtimes
   end
 end

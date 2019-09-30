@@ -68,8 +68,22 @@ defmodule AppWeb.TeamController do
         
   end
 
-  def get_team_workingtimes(conn, %{"teamID" => teamID}) do
-    render(conn, AppWeb.WorkingtimeView, "index.json", workingtimes: Result.list_team_workingtimes(teamID))
+  def get_team_workingtimes(conn, %{"teamID" => teamID} = params) do
+    clockStart = Map.get(params, "start", "")
+    clockEnd = Map.get(params, "end", "")
+    cond do
+      clockStart != "" && clockEnd != "" -> render(conn, AppWeb.WorkingtimeView, "index.json", workingtimes: Result.list_team_workingtimes_start_end(teamID, clockStart, clockEnd))
+      clockStart != "" -> render(conn, AppWeb.WorkingtimeView, "index.json", workingtimes: Result.list_team_workingtimes_start(teamID, clockStart))
+      clockEnd != "" -> render(conn, AppWeb.WorkingtimeView, "index.json", workingtimes: Result.list_team_workingtimes_end(teamID, clockEnd))
+      true -> render(conn, AppWeb.WorkingtimeView, "index.json", workingtimes: Result.list_team_workingtimes(teamID))
+    end
   end
 
+  def del_member(conn, %{"teamID" => teamID, "userID" => userID}) do
+    member_assoc = Result.get_team_member(userID, teamID)
+
+    with {:ok, %Member{}} <- Result.delete_member(member_assoc) do
+      send_resp(conn, :no_content, "")
+    end
+  end
 end
