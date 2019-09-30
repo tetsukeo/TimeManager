@@ -62,7 +62,4 @@ defmodule AppWeb.UserController do
     end
   end
 
-
-
-
 end

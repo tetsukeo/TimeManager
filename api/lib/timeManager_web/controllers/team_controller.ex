@@ -86,4 +86,8 @@ defmodule AppWeb.TeamController do
       send_resp(conn, :no_content, "")
     end
   end
+
+  def get_user_team(conn, %{"userID" => userID}) do
+      render(conn, "index.json", teams: Result.get_user_team(userID))
+  end
 end

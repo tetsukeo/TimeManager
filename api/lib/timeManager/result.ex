@@ -547,4 +547,9 @@ defmodule App.Result do
     Repo.delete(member)
   end
 
+  def get_user_team(userID) do
+    query = from c in Team, join: d in Member, on: c.id == d.team_id, where: d.user_id == ^userID
+    Repo.all(query)
+  end
+
 end
