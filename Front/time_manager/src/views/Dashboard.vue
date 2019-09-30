@@ -6,13 +6,14 @@
       class="block-container item-a"
       @setPeriod="setPeriod"
     ></User>
-    <ChartManager :color="colors" ref="donut" class="block-container"></ChartManager>
+    <ChartManager  :color="colors" ref="donut" class="block-container"></ChartManager>
 
-    <WorkingTimes :datePeriod="period" :color="colors" ref="form" class="block-container item-b"></WorkingTimes>
+    <WorkingTimes @setChartManager="setChartManager" :datePeriod="period" :color="colors" ref="form" class="block-container item-b"></WorkingTimes>
     <WorkingTime @setPeriod="setPeriod" class="block-container"></WorkingTime>
 
     <ClockManager :infoUser="infoUser" @setStatus="setStatus" class="block-container"></ClockManager>
     <UserManager class="block-container"></UserManager>
+
   </div>
 </template>
 
@@ -57,14 +58,12 @@ import WorkingTime from "./../components/WorkingTime";
 import WorkingTimes from "./../components/WorkingTimes";
 import ChartManager from "./../components/ChartManager";
 import User from "./../components/User";
-import SearchBar from "./../components/SearchBar";
 import UserManager from "./../components/UserManager";
 import moment from "moment";
 
 export default {
   name: "App",
   components: {
-    SearchBar,
     User,
     ChartManager,
     WorkingTimes,
@@ -87,8 +86,10 @@ export default {
         surname: "Batman",
         id: 69,
         mail: "batman.tropchou@malaise.com",
-        status: false
-      }
+        status: false,
+        teamName: ""
+      },
+      info: null
     };
   },
   mounted() {
@@ -97,6 +98,7 @@ export default {
     this.infoUser.mail = localStorage.mail;
     this.infoUser.status = localStorage.status;
     this.infoUser.role = localStorage.role;
+    this.infoUser.teamName = "azer"
   },
   methods: {
     setColor(color) {
@@ -115,6 +117,9 @@ export default {
       } else {
         this.infoUser.status = true;
       }
+    },
+    setChartManager(infos) {
+      this.$refs.donut.setInfos(infos);
     }
   }
 };

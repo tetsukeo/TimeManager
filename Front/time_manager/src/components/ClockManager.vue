@@ -1,12 +1,12 @@
 <template>
   <div style="display: grid; grid-template-rows: 100%; padding: 20px;">
+        <b-button v-if="!infoUser.status" @click="setStatus" variant="danger">Not Working</b-button>
+
     <b-button v-if="infoUser.status" @click="setStatus" variant="success">Working</b-button>
-    <b-button v-if="!infoUser.status" @click="setStatus" variant="danger">Not Working</b-button>
   </div>
 </template>
 <script>
 import Axios from "axios";
-import Vue from "vue";
 import moment from "moment";
 
 export default {
@@ -16,7 +16,25 @@ export default {
       type: Object
     }
   },
+  mounted() {
+    this.getClock();
+  },
   methods: {
+        getClock() {
+      this.$http
+        .get("http://127.0.0.1:4000/api/clocks/" + localStorage.userId, {
+          headers: { Authorization: `Bearer ${localStorage.token}` }
+        })
+        .then(response => {
+          this.infos = JSON.stringify(response.data);
+          this.infos = JSON.parse(this.infos);
+          
+          if (this.infos.length != 0) this.infoUser.status = true;
+          else this.infoUser.status = false;
+
+        })
+        .catch(e => console.log(e));
+    },
     setStatus() {
       const now = moment(Date.now()).format("YYYY-MM-DD HH:mm:ss");
 
@@ -36,6 +54,7 @@ export default {
           this.infos = JSON.parse(this.infos);
           if (this.infos.length != 0) this.infoUser.status = true;
           else this.infoUser.status = false;          
+          localStorage.status = this.infoUser.status;          
         })
         .catch(e => console.log(e));
       this.$emit("setStatus");
