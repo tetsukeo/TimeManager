@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div class>
     <donut-chart id="donut" :data="donutData" :colors="textColor" resize="true"></donut-chart>
   </div>
 </template>
@@ -24,24 +24,25 @@ export default {
         "#fA0000"
       ],
       donutData: [],
-                datePeriod : {
-              date1: new Date(),
-              date2: moment().add(10, 'days').calendar()
-          },
-          colors : {
-              color: ""
-          },
-          lineData : []
-
+      datePeriod: {
+        date1: new Date(),
+        date2: moment()
+          .add(10, "days")
+          .calendar()
+      },
+      colors: {
+        color: ""
+      },
+      lineData: []
     };
   },
   components: {
     DonutChart
   },
   props: {
-      color: {
-          type: Object
-      }
+    color: {
+      type: Object
+    }
   },
   methods: {
     setInfos(infos) {
@@ -49,37 +50,26 @@ export default {
       let i = 0;
       let h = 0;
       let moy = 0;
-      console.log("set donut");
-      
       let obj = {};
       while (i < infos.length) {
         h = 0;
         moy = 0;
-        let test = infos[i][2]
-        
+        let test = infos[i][2];
+
         while (h < test.length) {
-          console.log("test");
-          
           moy = moy + infos[i][2][h];
           h++;
         }
         if (moy > 0) moy = moy / h;
-       // console.log(moy);
-        //console.log(infos);
-        
-       obj["label"] = infos[i][0];
+
+        obj["label"] = infos[i][0];
         obj["value"] = moy;
-        console.log(obj);
-        
-        this.donutData.push({label: infos[i][0], value: moy});
+
+        this.donutData.push({ label: infos[i][0], value: moy });
         i++;
       }
-     // console.log(this.donutData);
-       
     },
     setColor() {
-    //  console.log(this.donutData);
-      
       let colorsDec = [];
       let color = this.color.color.replace(/#/g, "");
       color = parseInt(color, 16);
@@ -100,16 +90,12 @@ export default {
         i++;
       }
       this.textColor = colorsDec;
-        this.donutData.push("");
-        this.donutData.pop();
+      this.donutData.push("");
+      this.donutData.pop();
     }
   },
   created: function() {
-      this.setColor();
-  },
-  mounted() {
-    console.log("hello");
-    
+    this.setColor();
   }
 };
 </script>

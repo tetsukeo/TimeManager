@@ -16,7 +16,9 @@
         <p class="userline">{{infoUserManager.id}}</p>
         <p class="userline">{{infoUserManager.mail}}</p>
         <p class="userline">{{infoUserManager.role}}</p>
-        <p class="userline">{{infoUserManager.teamName}}</p>
+
+        <p v-if="listTeams.length > 0" class="userline">{{teamNames}}</p>
+        <p v-if="listTeams.length == 0" class="userline">No team</p>
 
         <p class="userline" v-if="infoUserManager.status">Working</p>
         <p class="userline" v-if="!infoUserManager.status">Not working</p>
@@ -64,42 +66,18 @@
               ></b-form-input>
             </b-form-group>
             <b-form-group
-              :state="roleStateManager"
-              label="Role"
-              label-for="role-input"
-              invalid-feedback="Role is required"
-            >
-              <b-form-input
-                v-model="tmpInfoUserManager.role"
-                id="role-input"
-                :state="roleStateManager"
-                required
-              ></b-form-input>
-            </b-form-group>
-            <b-form-group
-              :state="mailStateManager"
-              label="Mail"
-              label-for="mail-input"
-              invalid-feedback="Mail is required"
-            >
-              <b-form-input
-                v-model="tmpInfoUserManager.mail"
-                id="mail-input"
-                :state="mailStateManager"
-                required
-              ></b-form-input>
-            </b-form-group>
-            <b-form-group
               :state="teamStateManager"
               label="Team"
               label-for="team-input"
               invalid-feedback="Team not exist"
             >
-              <b-form-input
-                v-model="tmpInfoUserManager.team"
-                id="team-input"
-                :state="teamStateManager"
-              ></b-form-input>
+              <input class="form-control" v-model="newTeam" v-on:keyup.enter="addTeam()" />
+              <ul class="list-group" v-show="listTeams.length">
+                <li class="list-group-item list-group-item-info" v-for="team in infoTeams">
+                  <span>{{ team.name }}</span>
+                  <b-button @click="removeTodo(team)" variant="outline-primary">Remove</b-button>
+                </li>
+              </ul>
             </b-form-group>
           </form>
         </b-modal>
@@ -117,6 +95,10 @@ export default {
   components: { SearchBar },
   data() {
     return {
+      infoTeams: null,
+      listTeams: [],
+      teamNames: "",
+      newTeam: "",
       teams: [],
       vue: false,
       nameStateManager: null,
@@ -131,7 +113,7 @@ export default {
         id: "2",
         status: false,
         role: "",
-        teamName:""
+        teamName: ""
       },
       tmpInfoUserManager: {
         surname: "",
@@ -144,6 +126,18 @@ export default {
     };
   },
   methods: {
+    getUser() {
+      this.$http
+        .get("http://127.0.0.1:4000/api/users/" + this.infoUserManager.id, {
+          headers: { Authorization: `Bearer ${localStorage.token}` }
+        })
+        .then(response => {
+          this.infos = JSON.stringify(response.data);
+          this.infos = JSON.parse(this.infos);
+          localStorage.role = this.infos.role;
+        })
+        .catch(e => console.log(e));
+    },
     makeToast(variant = null, title, message) {
       this.$bvToast.toast(message, {
         title: `${title || "default"}`,
@@ -158,6 +152,7 @@ export default {
       this.infoUserManager.role = info.role;
       this.infoUserManager.teamName = "azer";
       this.getClock();
+      this.getUsersTeams();
     },
     getClock() {
       Axios.get("http://127.0.0.1:4000/api/clocks/" + this.infoUserManager.id, {
@@ -216,13 +211,14 @@ export default {
       let find = false;
       while (this.teams.length > i && find == false) {
         if (
-          this.tmpInfoUserManager.team == this.teams[i].id ||
-          this.tmpInfoUserManager.team == this.teams[i].name
+          this.newTeam == this.teams[i].id ||
+          this.newTeam == this.teams[i].name
         ) {
+          let k = i;
           find = true;
           Axios.post(
             "http://127.0.0.1:4000/api/teams/" +
-              this.teams[i].id +
+              this.teams[k].id +
               "/members/" +
               this.infoUserManager.id,
             {},
@@ -231,20 +227,16 @@ export default {
             }
           )
             .then(response => {
-              this.updateUser();
-              this.infoUserManager.mail = this.tmpInfoUserManager.mail;
-              this.infoUserManager.surname = this.tmpInfoUserManager.surname;
-              this.infoUserManager.teamName = this.team[i].name;
-              localStorage.username = this.infoUserManager.surname;
-              localStorage.mail = this.infoUserManager.mail;
+              this.getUsersTeams();
               return;
             })
-            .catch(e => console.log("lol"));
+            .catch(e => console.log(e));
         }
         i++;
       }
-      this.tmpInfoUserManager.team = "";
-      this.makeToast("danger", "Error", "Team not found");
+      if (find == false) {
+        this.makeToast("danger", "Error", "Team not found");
+      }
     },
     setTeam() {
       Axios.get("http://127.0.0.1:4000/api/teams", {
@@ -266,7 +258,7 @@ export default {
       if (!this.checkFormValidity()) {
         return;
       }
-      this.setTeam();
+      this.updateUser();
       this.infoUserManager.mail = this.tmpInfoUserManager.mail;
       this.infoUserManager.surname = this.tmpInfoUserManager.surname;
 
@@ -284,6 +276,45 @@ export default {
     validEmail: function(email) {
       var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return re.test(email);
+    },
+    removeTodo(todo) {
+      Axios.delete(
+        "http://127.0.0.1:4000/api/teams/" +
+          todo.id +
+          "/members/" +
+          this.infoUserManager.id,
+        {
+          headers: { Authorization: `Bearer ${localStorage.token}` }
+        }
+      )
+        .then(response => {
+          this.getUsersTeams();
+        })
+        .catch(e => console.log(e));
+    },
+    addTeam(team) {
+      this.setTeam();
+    },
+    getUsersTeams() {
+      Axios.get(
+        "http://127.0.0.1:4000/api/users/" + this.infoUserManager.id + "/teams",
+        {
+          headers: { Authorization: `Bearer ${localStorage.token}` }
+        }
+      )
+        .then(response => {
+          this.infoTeams = JSON.stringify(response.data);
+          this.infoTeams = JSON.parse(this.infoTeams);
+          let i = 0;
+          this.teamNames = "";
+          this.listTeams = [];
+          while (this.infoTeams.length > i) {
+            this.listTeams.push(this.infoTeams[i].name);
+            this.teamNames = this.teamNames + this.infoTeams[i].name + " ";
+            i++;
+          }
+        })
+        .catch(e => console.log(e));
     }
   }
 };

@@ -1,6 +1,6 @@
 <template>
   <div style="display: grid; grid-template-rows: 100%; padding: 20px;">
-        <b-button v-if="!infoUser.status" @click="setStatus" variant="danger">Not Working</b-button>
+    <b-button v-if="!infoUser.status" @click="setStatus" variant="danger">Not Working</b-button>
 
     <b-button v-if="infoUser.status" @click="setStatus" variant="success">Working</b-button>
   </div>
@@ -20,7 +20,7 @@ export default {
     this.getClock();
   },
   methods: {
-        getClock() {
+    getClock() {
       this.$http
         .get("http://127.0.0.1:4000/api/clocks/" + localStorage.userId, {
           headers: { Authorization: `Bearer ${localStorage.token}` }
@@ -28,10 +28,9 @@ export default {
         .then(response => {
           this.infos = JSON.stringify(response.data);
           this.infos = JSON.parse(this.infos);
-          
+
           if (this.infos.length != 0) this.infoUser.status = true;
           else this.infoUser.status = false;
-
         })
         .catch(e => console.log(e));
     },
@@ -51,10 +50,10 @@ export default {
       )
         .then(response => {
           this.infos = JSON.stringify(response.data);
-          this.infos = JSON.parse(this.infos);
-          if (this.infos.length != 0) this.infoUser.status = true;
-          else this.infoUser.status = false;          
-          localStorage.status = this.infoUser.status;          
+          this.infos = JSON.parse(this.infos);          
+          if (this.infos.id) this.infoUser.status = true;
+          else this.infoUser.status = false;
+          localStorage.status = this.infoUser.status;
         })
         .catch(e => console.log(e));
       this.$emit("setStatus");

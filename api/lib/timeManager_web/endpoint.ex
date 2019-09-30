@@ -43,7 +43,7 @@ defmodule AppWeb.Endpoint do
     signing_salt: "U8UAYNdO"
 
   plug Corsica,
-       allow_headers: ["access-control-allow-headers", "access-control-allow-origin", "content-type"],
+       allow_headers: ["content-type"],
        origins: ["http://localhost:8080", "http://localhost:4000"],
        log: [rejected: :error, invalid: :warn, accepted: :debug]
 

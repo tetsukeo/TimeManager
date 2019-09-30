@@ -19,7 +19,9 @@
         <p class="userline">{{infoUser.id}}</p>
         <p class="userline">{{infoUser.mail}}</p>
         <p class="userline">{{infoUser.role}}</p>
-        <p class="userline">{{infoUser.teamName}}</p>
+
+        <p v-if="listTeams.length > 0" class="userline">{{teamNames}}</p>
+        <p v-if="listTeams.length == 0" class="userline">No team</p>
 
         <p class="userline" v-if="infoUser.status">Working</p>
         <p class="userline" v-if="!infoUser.status">Not working</p>
@@ -64,7 +66,13 @@
               label-for="team-input"
               invalid-feedback="Team not exist"
             >
-              <b-form-input v-model="tmpInfoUser.team" id="team-input" :state="teamState"></b-form-input>
+              <input class="form-control" v-model="newTeam" v-on:keyup.enter="addTeam()" />
+              <ul class="list-group" v-show="listTeams.length">
+                <li class="list-group-item list-group-item-info" v-for="team in infoTeams">
+                  <span>{{ team.name }}</span>
+                  <b-button @click="removeTodo(team)" variant="outline-primary">Remove</b-button>
+                </li>
+              </ul>
             </b-form-group>
           </form>
         </b-modal>
@@ -85,6 +93,15 @@
       </div>
       <div style="margin: 20px auto">
         <b-button @click="createTeam" variant="outline-primary">Create team</b-button>
+        <b-button id="popover-button-variant">List of team</b-button>
+        <b-popover target="popover-button-variant" variant="success" triggers="focus">
+          <template v-slot:title>list of team</template>
+          <ul class="list-group" v-show="listTeams.length">
+            <li class="list-group-item list-group-item-info" v-for="team in allTeams">
+              <span>{{ team.name }}</span>
+            </li>
+          </ul>
+        </b-popover>
         <div>
           <b-form-input v-model="teamName" placeholder="Enter team name"></b-form-input>
         </div>
@@ -142,12 +159,18 @@ import ColorPicker from "vue-color-picker-wheel";
 import store from "./../store";
 import Axios from "axios";
 import { log } from "util";
+import { locales } from "moment";
 
 export default {
   name: "User",
   data() {
     return {
+      allTeams: [],
+      newTeam: "",
+      listTeams: [],
+      teamNames: "",
       teams: [],
+      infoTeams: [],
       name: "",
       teamName: "",
       nameState: null,
@@ -257,8 +280,8 @@ export default {
       let find = false;
       while (this.teams.length > i && find == false) {
         if (
-          this.tmpInfoUser.team == this.teams[i].id ||
-          this.tmpInfoUser.team == this.teams[i].name
+          this.newTeam == this.teams[i].id ||
+          this.newTeam == this.teams[i].name
         ) {
           let k = i;
           find = true;
@@ -267,22 +290,13 @@ export default {
               this.teams[k].id +
               "/members/" +
               this.infoUser.id,
-            {} ,
+            {},
             {
               headers: { Authorization: `Bearer ${localStorage.token}` }
             }
           )
             .then(response => {
-              console.log("okay");
-              console.log(this.teams[k]);
-              
-              this.updateUser();
-              
-              this.infoUser.mail = this.tmpInfoUser.mail;
-              this.infoUser.surname = this.tmpInfoUser.surname;
-              this.infoUser.teamName = this.teams[k].name;
-              localStorage.username = this.infoUser.surname;
-              localStorage.mail = this.infoUser.mail;
+              this.getUsersTeams();
               return;
             })
             .catch(e => console.log(e));
@@ -291,8 +305,18 @@ export default {
       }
       this.tmpInfoUser.team = "";
       if (find == false) {
-      this.makeToast("danger", "Error", "Team not found");
+        this.makeToast("danger", "Error", "Team not found");
       }
+    },
+    getAllTeam() {
+      Axios.get("http://127.0.0.1:4000/api/teams", {
+        headers: { Authorization: `Bearer ${localStorage.token}` }
+      })
+        .then(response => {
+          this.allTeams = JSON.stringify(response.data);
+          this.allTeams = JSON.parse(this.allTeams);
+        })
+        .catch(e => console.log(e));
     },
     setTeam() {
       Axios.get("http://127.0.0.1:4000/api/teams", {
@@ -333,15 +357,13 @@ export default {
       if (!this.checkFormValidity()) {
         return;
       }
-      if (this.tmpInfoUser.team != "") {
-        this.setTeam();
-      } else {
-        this.updateUser();
-        this.infoUser.mail = this.tmpInfoUser.mail;
-        this.infoUser.surname = this.tmpInfoUser.surname;
-        localStorage.username = this.infoUser.surname;
-        localStorage.mail = this.infoUser.mail;
-      }
+
+      this.updateUser();
+      this.infoUser.mail = this.tmpInfoUser.mail;
+      this.infoUser.surname = this.tmpInfoUser.surname;
+      localStorage.username = this.infoUser.surname;
+      localStorage.mail = this.infoUser.mail;
+
       // Hide the modal manually
       this.$nextTick(() => {
         this.$refs.modal.hide();
@@ -356,11 +378,66 @@ export default {
     validEmail: function(email) {
       var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return re.test(email);
+    },
+    getUsersTeams() {
+      Axios.get(
+        "http://127.0.0.1:4000/api/users/" + localStorage.userId + "/teams",
+        {
+          headers: { Authorization: `Bearer ${localStorage.token}` }
+        }
+      )
+        .then(response => {
+          this.infoTeams = JSON.stringify(response.data);
+          this.infoTeams = JSON.parse(this.infoTeams);
+          let i = 0;
+          this.teamNames = "";
+          this.listTeams = [];
+          while (this.infoTeams.length > i) {
+            this.listTeams.push(this.infoTeams[i].name);
+            this.teamNames = this.teamNames + this.infoTeams[i].name + " ";
+            i++;
+          }
+        })
+        .catch(e => console.log(e));
+    },
+    removeTodo(todo) {
+      Axios.delete(
+        "http://127.0.0.1:4000/api/teams/" +
+          todo.id +
+          "/members/" +
+          localStorage.userId,
+        {
+          headers: { Authorization: `Bearer ${localStorage.token}` }
+        }
+      )
+        .then(response => {
+          this.getUsersTeams();
+        })
+        .catch(e => console.log(e));
+    },
+    addTeam(team) {
+      this.setTeam();
+    },
+    getUser() {
+      this.$http
+        .get("http://127.0.0.1:4000/api/users/" + localStorage.userId, {
+          headers: { Authorization: `Bearer ${localStorage.token}` }
+        })
+        .then(response => {
+          this.infos = JSON.stringify(response.data);
+          this.infos = JSON.parse(this.infos);
+
+          this.infoUser.surname = this.infos.username;
+          this.infoUser.mail = this.infos.email;
+          localStorage.role = this.infos.role;
+        })
+        .catch(e => console.log(e));
     }
   },
   mounted() {
-    console.log(this.infoUser);
-    
+    this.getUser();
+    this.getUsersTeams();
+    this.getAllTeam();
   }
 };
 </script>

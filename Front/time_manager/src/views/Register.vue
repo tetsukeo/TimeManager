@@ -46,10 +46,14 @@
 </template>
 
 <script>
+import jwt_decode from "jwt-decode";
+
 export default {
+  
   name: "Register",
   data() {
     return {
+      infos: null,
       rEmail: "",
       rUsername: "",
       rPassword: "",
@@ -71,18 +75,51 @@ export default {
             password_confirmation: this.rConfirmPassword
           }
         })
-        .then(request => this.registerSuccessful(request))
+        .then(request => {
+          localStorage.token = request.body.jwt;
+          console.log("register okay");
+          
+          var decoded = jwt_decode(localStorage.token);
+          localStorage.userId = decoded.sub[0];
+          console.log("before");
+          
+          this.registerSuccessful(request);
+        })
         .catch(() => this.registerFailed());
+    },
+    getClock() {
+      this.$http
+        .get("http://127.0.0.1:4000/api/clocks/" + localStorage.userId, {
+          headers: { Authorization: `Bearer ${localStorage.token}` }
+        })
+        .then(response => {
+          this.infos = JSON.stringify(response.data);
+          this.infos = JSON.parse(this.infos);
+          if (this.infos.length != 0) localStorage.status = true;
+          else localStorage.status = false;
+        })
+        .catch(e => console.log(e));
+    },
+    getUser() {
+      this.$http
+        .get("http://127.0.0.1:4000/api/users/" + localStorage.userId, {
+          headers: { Authorization: `Bearer ${localStorage.token}` }
+        })
+        .then(response => {
+          this.infos = JSON.stringify(response.data);
+          this.infos = JSON.parse(this.infos);
+          localStorage.role = this.infos.role;
+        })
+        .catch(e => console.log(e));
     },
     registerSuccessful(req) {
       if (!req.body.jwt) {
         this.registerFailed();
         return;
       }
-
-      localStorage.token = req.body.jwt;
       this.error = false;
-
+      console.log("no error");
+      
       this.$router.replace(this.$route.query.redirect || "/dashboard");
     },
     registerFailed() {
