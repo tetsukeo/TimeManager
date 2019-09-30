@@ -13,6 +13,7 @@
 
     <ClockManager :infoUser="infoUser" @setStatus="setStatus" class="block-container"></ClockManager>
     <UserManager class="block-container"></UserManager>
+
   </div>
 </template>
 
@@ -85,7 +86,8 @@ export default {
         surname: "Batman",
         id: 69,
         mail: "batman.tropchou@malaise.com",
-        status: false
+        status: false,
+        teamName: ""
       },
       info: null
     };
@@ -96,6 +98,7 @@ export default {
     this.infoUser.mail = localStorage.mail;
     this.infoUser.status = localStorage.status;
     this.infoUser.role = localStorage.role;
+    this.infoUser.teamName = "azer"
   },
   methods: {
     setColor(color) {
