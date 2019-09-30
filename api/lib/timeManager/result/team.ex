@@ -12,7 +12,7 @@ defmodule App.Result.Team do
   @doc false
   def changeset(team, attrs) do
     team
-    |> cast(attrs, [:name, :users])
-    |> validate_required([:name, :users])
+    |> cast(attrs, [:name])
+    |> validate_required([:name])
   end
 end
