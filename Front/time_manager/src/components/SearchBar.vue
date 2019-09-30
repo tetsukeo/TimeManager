@@ -8,7 +8,7 @@
 
 <script>
 import axios from "axios";
-import HTTP from "./httpCommon";
+
 export default {
   name: "SearchBar",
   data() {
@@ -19,9 +19,6 @@ export default {
     };
   },
   mounted() {
-    const auth = {
-      headers: { Authorization: "JWT " + localStorage.token }
-    };
     axios
       .get("http://127.0.0.1:4000/api/users", {
         headers: { Authorization: `Bearer ${localStorage.token}` }

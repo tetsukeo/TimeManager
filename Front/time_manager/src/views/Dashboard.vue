@@ -6,9 +6,9 @@
       class="block-container item-a"
       @setPeriod="setPeriod"
     ></User>
-    <ChartManager :color="colors" ref="donut" class="block-container"></ChartManager>
+    <ChartManager  :color="colors" ref="donut" class="block-container"></ChartManager>
 
-    <WorkingTimes :datePeriod="period" :color="colors" ref="form" class="block-container item-b"></WorkingTimes>
+    <WorkingTimes @setChartManager="setChartManager" :datePeriod="period" :color="colors" ref="form" class="block-container item-b"></WorkingTimes>
     <WorkingTime @setPeriod="setPeriod" class="block-container"></WorkingTime>
 
     <ClockManager :infoUser="infoUser" @setStatus="setStatus" class="block-container"></ClockManager>
@@ -57,14 +57,12 @@ import WorkingTime from "./../components/WorkingTime";
 import WorkingTimes from "./../components/WorkingTimes";
 import ChartManager from "./../components/ChartManager";
 import User from "./../components/User";
-import SearchBar from "./../components/SearchBar";
 import UserManager from "./../components/UserManager";
 import moment from "moment";
 
 export default {
   name: "App",
   components: {
-    SearchBar,
     User,
     ChartManager,
     WorkingTimes,
@@ -88,7 +86,8 @@ export default {
         id: 69,
         mail: "batman.tropchou@malaise.com",
         status: false
-      }
+      },
+      info: null
     };
   },
   mounted() {
@@ -115,6 +114,9 @@ export default {
       } else {
         this.infoUser.status = true;
       }
+    },
+    setChartManager(infos) {
+      this.$refs.donut.setInfos(infos);
     }
   }
 };

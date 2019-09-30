@@ -121,8 +121,7 @@
 <script>
 import ColorPicker from "vue-color-picker-wheel";
 import store from "./../store";
-import axios from "axios";
-import { userInfo } from "os";
+import Axios from 'axios';
 
 export default {
   name: "User",

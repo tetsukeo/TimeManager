@@ -10,27 +10,25 @@
       <datepicker v-model="state.date1" placeholder="Select Date"></datepicker>
     </div>
     <div style="margin: 0 auto;">
-        <b-button @click="sendDate" variant="outline-primary">Emit</b-button>
+      <b-button @click="sendDate" variant="outline-primary">Emit</b-button>
     </div>
   </div>
 </template>
 
 <style scoped>
-    .select-period {
-        display: grid;
-        grid-template-rows: 75px 100px 100px 100px;
-    }
+.select-period {
+  display: grid;
+  grid-template-rows: 75px 100px 100px 100px;
+}
 
-    .align-element {
-        margin-left: 25%;
-    }
+.align-element {
+  margin-left: 25%;
+}
 </style>
 
 <script>
 import Datepicker from "vuejs-datepicker";
-import VueTimepicker from "vue2-timepicker";
 import "vue2-timepicker/dist/VueTimepicker.css";
-import moment from "moment";
 
 import * as lang from "vuejs-datepicker/src/locale";
 
@@ -41,8 +39,7 @@ var state = {
 
 export default {
   components: {
-    Datepicker,
-    VueTimepicker
+    Datepicker
   },
   name: "work",
   data() {

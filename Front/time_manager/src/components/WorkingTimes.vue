@@ -4,9 +4,9 @@
       id="line"
       :data="lineData"
       xkey="day"
-      ykeys='["tetsukeo","maxou"]'
+      :ykeys="users"
       resize="true"
-      :labels="serie"
+      :labels="users"
       :line-colors="textColor"
       grid="true"
       grid-text-weight="bold"
@@ -34,20 +34,15 @@ export default {
   },
   data() {
     return {
+      originColor: false,
       idTmp: -1,
       userNb: 0,
       workingTimes: null,
       infos: null,
       users: [],
-      textColor: [
-        "#ff0000",
-        "#36A2EB"
-      ],
+      textColor: ["#ff0000", "#36A2EB"],
       lineData: [],
-      serie: [
-        "Serie A",
-        "Serie B"
-      ],
+      serie: ["Serie A", "Serie B"],
       line: []
     };
   },
@@ -77,19 +72,31 @@ export default {
         i++;
       }
       this.textColor = colorsDec;
+      this.getUser()            
     },
-    setLineChart () {
+    setLineChart() {
+      this.datePeriod.date1 = new Date(this.datePeriod.date1);
+      this.datePeriod.date2 = new Date(this.datePeriod.date2);
+      this.datePeriod.date1.setHours(0);
+      this.datePeriod.date1.setHours(0);
+      this.datePeriod.date1.setMinutes(0);
+      this.datePeriod.date1.setMinutes(0);
+
       let i = 0;
       let tlineData = [];
-      let diff = (new Date(this.datePeriod.date1) - new Date(this.datePeriod.date2)) / (1000 * 3600 * 24);
+      let diff =
+        (new Date(this.datePeriod.date1) - new Date(this.datePeriod.date2)) /
+        (1000 * 3600 * 24);
       while (i <= diff) {
-        
-        let newDay = moment(this.datePeriod.date1).subtract(diff - (i + 1), "days")._d;
+        let newDay = moment(this.datePeriod.date1).subtract(
+          diff - i,
+          "days"
+        )._d;
         var user = 0;
-        var days = {days: moment(String(newDay)).format("YYYY-MM-DD")}
-        var day = {day: moment(String(newDay)).format("YYYY-MM-DD")}
+        var days = { days: moment(String(newDay)).format("YYYY-MM-DD") };
+        var day = { day: moment(String(newDay)).format("YYYY-MM-DD") };
         var obj = null;
-        obj = Object.assign({}, day, days)   
+        obj = Object.assign({}, day, days);
         while (this.infos[user]) {
           obj[this.infos[user][0]] = this.infos[user][2][i];
           user++;
@@ -97,58 +104,43 @@ export default {
         i++;
         tlineData.push(obj);
       }
-      console.log("Fin set Line Chart");
-      console.log(tlineData);
 
-            this.lineData = tlineData;
-
+      
+      this.$emit("setChartManager", this.infos)
+      this.lineData = tlineData;
     },
     getUser() {
-      this.idTmp= -1;
+      
+      this.idTmp = -1;
       this.userNb = 0;
-      this.workingTimes= null;
-      this.infos= null;
-      this.users= [];
-      this.textColor = [
-        "#ff0000",
-        "#36A2EB"
-      ],
+      this.workingTimes = null;
+      this.infos = null;
+      this.users = [];
       this.lineData = [],
-      this.serie = [
-        "Serie A",
-        "Serie B"
-      ],
       this.line = [];
-      console.log("get User");
       
       Axios.get("http://127.0.0.1:4000/api/users", {
         headers: { Authorization: `Bearer ${localStorage.token}` }
       })
-        .then(response => {          
+        .then(response => {
           this.infos = JSON.stringify(response.data);
           this.infos = JSON.parse(this.infos);
-          let i = 0;
-          console.log(this.infos);
-          
-          while (this.infos[i]) {
-            this.users.push(this.infos[i])
+          let i = 0;          
+          while (this.infos[i] && !this.originColor) {
+            this.users.push(this.infos[i].username);
             i++;
-          }          
+          }
+          this.originColor = false
           this.setChartUser();
         })
-        .catch(e => console.log(e));
+        .catch(e => console.log(e));        
     },
 
     betweenTwoDate(start, end, startPeriod, endPeriod) {
-
       if (start >= startPeriod) {
-
         if (start < endPeriod) {
-
           if (end > startPeriod) {
-
             if (end <= endPeriod) {
-
               return true;
             }
           }
@@ -165,15 +157,15 @@ export default {
       var arrayHours = [];
       var endPeriod = new Date(this.datePeriod.date1);
 
-      while (startPeriod <= endPeriod ) {
+      while (startPeriod <= endPeriod) {
         i = 0;
         HoursWork = 0;
         find = false;
-        while (workingTimes[i]) {        
+        while (workingTimes[i]) {
           var start = new Date(workingTimes[i].start);
           var end = new Date(workingTimes[i].end);
           start.setHours(start.getHours() - 2);
-          end.setHours(end.getHours() - 2);          
+          end.setHours(end.getHours() - 2);
           if (
             this.betweenTwoDate(
               start,
@@ -182,21 +174,29 @@ export default {
               moment(startPeriod).add(1, "days")._d
             )
           ) {
-            find = true;            
-            HoursWork = HoursWork + (new Date(workingTimes[i].end) - new Date(workingTimes[i].start)) / 1000 / 3600;
+            find = true;
+            HoursWork =
+              HoursWork +
+              (new Date(workingTimes[i].end) -
+                new Date(workingTimes[i].start)) /
+                1000 /
+                3600;
             i++;
           } else {
             i++;
           }
         }
-        if (find == false) arrayHours.push(0)
-        else arrayHours.push(HoursWork)
+        if (find == false) arrayHours.push(0);
+        else arrayHours.push(HoursWork);
         startPeriod = moment(startPeriod).add(1, "days")._d;
-      };
-      this.infos[id].push(arrayHours);           
+      }
+      if (this.infos[id][2]) {
+        this.infos[id].pop()
+      }
+      this.infos[id].push(arrayHours);
     },
 
-    getWorkingTime(id) {      
+    getWorkingTime(id) {
       if (id == this.idTmp) {
         return;
       }
@@ -211,13 +211,13 @@ export default {
           if (id + 1 < this.userNb) {
             this.getWorkingTime(id + 1);
           }
-          if ((id + 1) >= this.userNb) {
-              this.setLineChart()
+          if (id + 1 >= this.userNb) {
+            this.setLineChart();
           }
         })
         .catch(e => console.log(e));
     },
-    setChartUser() {      
+    setChartUser() {
       var user = [];
       var i = 0;
 
@@ -226,17 +226,18 @@ export default {
         i++;
       }
       this.userNb = i;
-      this.infos = user;      
-      var id = 0;      
+      this.infos = user;
+      var id = 0;
       this.getWorkingTime(id);
       id++;
     }
   },
-  created: function() {
-    this.setColor();
-  },
-  mounted() {       
+ 
+  mounted() {
+          this.originColor = true;
     this.getUser();
+    this.setColor();
+    
   }
 };
 </script>
