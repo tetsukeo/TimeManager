@@ -15,5 +15,6 @@ defmodule App.Result.Workingtime do
     workingtime
     |> cast(attrs, [:start, :end, :user_id])
     |> validate_required([:start, :end, :user_id])
+    |> check_constraint(:end, name: :positive_duration, message: "End clock must be greater than start clock") 
   end
 end

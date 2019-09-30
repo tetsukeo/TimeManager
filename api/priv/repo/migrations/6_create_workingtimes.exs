@@ -11,6 +11,6 @@ defmodule App.Repo.Migrations.CreateWorkingtimes do
     end
 
     create index(:workingtimes, [:user_id])
-    create constraint("workingtimes", "positive_duration", check: "end > start")
+    create constraint(:workingtimes, "positive_duration", check: "end > start")
   end
 end
