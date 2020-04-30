@@ -16,7 +16,7 @@
     "clean-webpack-plugin": "^2.0.0",
     "core-js": "^2.6.5",
     "es6-promise": "^4.2.8",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "jwt-decode": "^2.2.0",
     "luxon": "^1.17.2",
     "mdbvue": "^5.8.2",
